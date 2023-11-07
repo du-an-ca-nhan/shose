@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.sole.CreateSoleRequest;
 import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
+import com.example.shose.server.dto.response.sole.GetSoleInProductDetail;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.common.PageableObject;
 import jakarta.validation.Valid;
@@ -22,5 +23,7 @@ public interface SoleService {
     Boolean delete (String id);
 
     Sole getOneById (String id);
+    List<GetSoleInProductDetail> getSoleInProductDetail();
+
 
 }

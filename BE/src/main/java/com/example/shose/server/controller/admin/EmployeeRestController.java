@@ -1,13 +1,11 @@
 package com.example.shose.server.controller.admin;
 
+
 import com.example.shose.server.dto.request.address.CreateAddressRequest;
 import com.example.shose.server.dto.request.address.UpdateAddressRequest;
-import com.example.shose.server.dto.request.customer.CreateCustomerRequest;
-import com.example.shose.server.dto.request.customer.UpdateCustomerRequest;
 import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
-import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
 import com.example.shose.server.infrastructure.constant.Status;
 import com.example.shose.server.service.EmployeeService;
 import com.example.shose.server.util.ResponseObject;
@@ -24,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
 
 @RestController
 @CrossOrigin("*")

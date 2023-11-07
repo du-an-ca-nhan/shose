@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.brand.CreateBrandRequest;
 import com.example.shose.server.dto.request.brand.FindBrandRequest;
 import com.example.shose.server.dto.request.brand.UpdateBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
+import com.example.shose.server.dto.response.brand.GetBrandInProductDetail;
 import com.example.shose.server.entity.Brand;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -77,5 +78,10 @@ public class BrandServiceImpl implements BrandService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public List<GetBrandInProductDetail> getBrandInProductDetail() {
+        return brandRepository.getBrandInProductDetail();
     }
 }

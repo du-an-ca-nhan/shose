@@ -4,11 +4,23 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, theme, Dropdown, Badge } from "antd";
+import {
+  Layout,
+  Menu,
+  Button,
+  theme,
+  Dropdown,
+  Badge,
+  Modal,
+  Form,
+  Input,
+  Checkbox,
+} from "antd";
 import "./style-dashboard-employee.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo_admin.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,24 +33,82 @@ import {
   faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
+import {
+  deleteToken,
+  deleteUserToken,
+  getUserToken,
+} from "../../helper/useCookies";
+import { toast } from "react-toastify";
+import { LoginApi } from "../../api/employee/login/Login.api";
 
 const { Header, Sider, Content } = Layout;
 const notificationCount = 5; // Số lượng thông báo chưa đọc
-const colorBgContainer = "#f0f2f5"; // Màu nền của header
 
 const DashBoardEmployee = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const nav = useNavigate();
+  const [form] = Form.useForm();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        return new Promise((resolve, reject) => {
+          Modal.confirm({
+            title: "Xác nhận",
+            content: "Bạn có đồng ý thêm không?",
+            okText: "Đồng ý",
+            cancelText: "Hủy",
+            onOk: () => resolve(values),
+            onCancel: () => reject(),
+          });
+        });
+      })
+      .then((value) => {
+        console.log(value);
+        if (value.resetPassword !== value.newPassword) {
+          toast.warning("Xác nhận lại mật khẩu sai.");
+          return;
+        }
+        LoginApi.changePassword(value)
+          .then((value) => {
+            toast.success("Đổi mật khẩu thành công.");
+            handleCancel();
+          })
+          .catch((err) => {});
+      })
+      .catch((error) => {});
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  const userToken = JSON.parse(getUserToken());
+  const handleLogout = () => {
+    deleteToken();
+    deleteUserToken();
+    nav("/login-management");
+    toast.success("Đăng xuất thành công");
+  };
 
   const menu = (
     <Menu>
       <Menu.Item icon={<UserOutlined />} key="1">
         Thông tin người dùng
       </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item icon={<LogoutOutlined />} key="2">
+      <Menu.Item icon={<SettingOutlined />} key="2" onClick={showModal}>
+        Đổi mật khẩu
+      </Menu.Item>
+      <Menu.Item icon={<LogoutOutlined />} key="3" onClick={handleLogout}>
         Đăng xuất
       </Menu.Item>
     </Menu>
@@ -172,24 +242,25 @@ const DashBoardEmployee = ({ children }) => {
           />
           <div style={{ display: "flex", alignItems: "center" }}>
             <Badge count={notificationCount} style={{ backgroundColor: "red" }}>
-              <Button type="text" style={{ marginRight: "16px" }}>
+              <Button type="text">
                 <BellOutlined />
               </Button>
             </Badge>
+            <span style={{ fontWeight: "bold", marginLeft: "20px" }}>
+              {userToken.fullName}
+            </span>
             <Dropdown overlay={menu} placement="bottomRight">
-              <Button type="text">
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSh3o8wXCosZQv39_aJj1CfaXpX5lfgRdqsAw&usqp=CAU"
-                  alt="User Avatar"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    marginRight: "50px",
-                    marginLeft: "20px",
-                  }}
-                />
-              </Button>
+              <img
+                src={userToken.avata}
+                alt="User Avatar"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  marginRight: "40px",
+                  marginLeft: "20px",
+                }}
+              />
             </Dropdown>
           </div>
         </Header>
@@ -207,6 +278,67 @@ const DashBoardEmployee = ({ children }) => {
           {children}
         </Content>
       </Layout>
+      <Modal
+        title="Đổi mật khẩu"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleOk}>
+            cập nhập
+          </Button>,
+        ]}
+      >
+        <Form
+          style={{
+            maxWidth: 600,
+            marginTop: "30px",
+          }}
+          name="validateOnly"
+          layout="vertical"
+          form={form}
+        >
+          <Form.Item
+            name="password"
+            label="Mật khẩu cũ : "
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu cũ.",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Mật khẩu mới :"
+            name="resetPassword"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu mới.",
+              },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="Xác nhận lại mật khẩu :"
+            name="newPassword"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập lại mật khẩu mới.",
+              },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 };

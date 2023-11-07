@@ -22,7 +22,6 @@ public class ResponseObject {
     public <T> ResponseObject(T obj) {
         processReponseObject(obj);
     }
-
     public <T> ResponseObject(Page<T> page) {
         this.setSuccess(true);
         this.setMessage("Thành công");

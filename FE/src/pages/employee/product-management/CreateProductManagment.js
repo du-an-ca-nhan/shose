@@ -124,10 +124,10 @@ const CreateProductManagment = () => {
     }).then((res) => {
       setListProduct(res.data.data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedNameValue]);
 
   const renderOptions = (nameList) => {
-    console.log(nameList);
     return nameList.map((product, index) => ({
       key: `${product}-${index}`,
       value: product,
@@ -604,10 +604,66 @@ const CreateProductManagment = () => {
 
   useEffect(() => {
     dataDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listColorAdd, listSizeAdd]);
 
   const handleUploadTableData = () => {
     dataDetail();
+  };
+
+  // cập nhập giá chúng vs số lượng chung
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+      {
+        key: "odd",
+        text: "Select Odd Row",
+        onSelect: (changeableRowKeys) => {
+          let newSelectedRowKeys = [];
+          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
+            if (index % 2 !== 0) {
+              return false;
+            }
+            return true;
+          });
+          setSelectedRowKeys(newSelectedRowKeys);
+        },
+      },
+      {
+        key: "even",
+        text: "Select Even Row",
+        onSelect: (changeableRowKeys) => {
+          let newSelectedRowKeys = [];
+          newSelectedRowKeys = changeableRowKeys.filter((_, index) => {
+            if (index % 2 !== 0) {
+              return true;
+            }
+            return false;
+          });
+          setSelectedRowKeys(newSelectedRowKeys);
+        },
+      },
+    ],
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showQuantityAndPriceModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleQuantityAndPriceOk = () => {
+    console.log("okkkk");
+    setIsModalOpen(false);
+  };
+  const handleQuantityAndPriceCancel = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -1078,24 +1134,54 @@ const CreateProductManagment = () => {
           </span>
         </div>
         <Form.Item>
-          <Tooltip title="Thêm sản phẩm chi tiết">
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="form-submit-btn"
-              onClick={handleUpload}
-            >
-              Hoàn Tất
-            </Button>
-          </Tooltip>
+          <Row gutter={16} justify={"end"}>
+            <Tooltip title="Thêm sản phẩm chi tiết">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={showQuantityAndPriceModal}
+                style={{ height: "40px", fontWeight: "bold" }}
+              >
+                Chỉnh sửa số lượng và giá
+              </Button>
+            </Tooltip>
+            <Tooltip title="Thêm sản phẩm chi tiết">
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={handleUpload}
+                style={{
+                  height: "40px",
+                  fontWeight: "bold",
+                  margin: "0px 20px",
+                }}
+              >
+                Hoàn Tất
+              </Button>
+            </Tooltip>
+            {/* </Col> */}
+          </Row>
         </Form.Item>
         <Table
           rowKey="id"
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={tableData}
           pagination={{ pageSize: 5 }}
         />
       </div>
+      <Modal
+        title="Chỉnh sửa số lượng và giá tiền chung"
+        open={isModalOpen}
+        onOk={handleQuantityAndPriceOk}
+        onCancel={handleQuantityAndPriceCancel}
+        okText="Chỉnh sửa"
+        cancelText="Hủy"
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
     </>
   );
 };

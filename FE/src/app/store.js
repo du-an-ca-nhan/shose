@@ -14,6 +14,7 @@ import ColorReducer from "./reducer/Color.reducer";
 import VoucherReducer from "./reducer/Voucher.reducer";
 import ProductReducer from "./reducer/Product.reducer";
 import LoadingReducer from "./reducer/Loading.reducer";
+import AddressAccountClientReducer from "./reducer/AddressAccountClient.reducer";
 export const store = configureStore({
   reducer: {
     category: CategoryReducer,
@@ -30,7 +31,8 @@ export const store = configureStore({
     color: ColorReducer,
     voucher: VoucherReducer,
     product: ProductReducer,
-    loading: LoadingReducer
+    loading: LoadingReducer,
+    addressAccountClient: AddressAccountClientReducer
   },
 });
 

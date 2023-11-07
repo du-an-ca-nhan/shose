@@ -1,42 +1,27 @@
+import { PlusOutlined } from "@ant-design/icons";
 import {
-  faEye,
   faFilter,
   faKaaba,
-  faListAlt,
+  faListAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Button,
-  Form,
-  Table,
-  Select,
-  Space,
-  Row,
-  Col,
-  Tabs,
-  Tooltip,
   Badge,
+  Button,
+  Select,
+  Tabs
 } from "antd";
-import moment from "moment";
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useState } from "react";
 import { useAppDispatch } from "../../../app/hook";
 import {
-  getAllBill,
-  getEmployees,
-  getUsers,
+  getAllBill
 } from "../../../app/reducer/Bill.reducer";
-import "./style-bill.css";
-import { useRef } from "react";
-import { AccountApi } from "../../../api/employee/account/account.api";
 import FormSearch from "./FormSearch";
-import { Link } from "react-router-dom";
-import { AddressApi } from "../../../api/employee/address/address.api";
 import TabBills from "./TabBills";
-import { PlusOutlined } from "@ant-design/icons";
+import "./style-bill.css";
 
 function BillManagement() {
   var listBill = useSelector((state) => state.bill.bills.value);

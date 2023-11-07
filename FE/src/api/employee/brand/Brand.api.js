@@ -30,4 +30,10 @@ export class BrandApi {
       data: data,
     });
   };
+  static getBrandInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/brand/in-product-detail`,
+    });
+  };
 }

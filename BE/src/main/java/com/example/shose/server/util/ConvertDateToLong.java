@@ -50,6 +50,8 @@ public class ConvertDateToLong {
     }
 
     public static void main(String[] args) {
-        System.out.println(new ConvertDateToLong().dateToLong(String.valueOf(new Date())));
+        System.out.println(new ConvertDateToLong().dateToLong("03/11/2023"));
+        System.out.println(new ConvertDateToLong().longToDate(1698944400000L));
+
     }
 }

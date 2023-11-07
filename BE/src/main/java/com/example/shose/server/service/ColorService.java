@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.color.CreateColorRequest;
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
+import com.example.shose.server.dto.response.color.GetColorInProductDetail;
 import com.example.shose.server.entity.Color;
 import jakarta.validation.Valid;
 
@@ -23,4 +24,6 @@ public interface ColorService {
     Color getOneById(String id);
 
     List<Color> getAllCode();
+    List<GetColorInProductDetail> getColorInProductDetail();
+
 }

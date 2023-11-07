@@ -9,32 +9,32 @@ import {
   Select,
   Table,
 } from "antd";
-import TimeLine from "./TimeLine";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { BillApi } from "../../../api/employee/bill/bill.api";
 import {
-  addPaymentsMethod,showModalBill,
+  addPaymentsMethod,
   addStatusPresent,
   getBill,
   getBillHistory,
   getPaymentsMethod,
-  getProductInBillDetail,
+  getProductInBillDetail
 } from "../../../app/reducer/Bill.reducer";
-import moment from "moment";
-import { useState } from "react";
-import { BillApi } from "../../../api/employee/bill/bill.api";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import React from "react";
+import TimeLine from "./TimeLine";
 
-import { useParams } from "react-router";
-import { addBillHistory } from "../../../app/reducer/Bill.reducer";
-import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
-import "./detail.css";
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "antd/es/input/TextArea";
+import NumberFormat from "react-number-format";
+import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import NumberFormat from "react-number-format";
-import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 import { AddressApi } from "../../../api/customer/address/address.api";
+import { PaymentsMethodApi } from "../../../api/employee/paymentsmethod/PaymentsMethod.api";
+import { addBillHistory } from "../../../app/reducer/Bill.reducer";
+import "./detail.css";
+import ModalAddProductDetail from "./modal/ModalAddProductDetail";
 
 var listStatus = [
   { id: 0, name: "Tạo hóa đơn", status: "TAO_HOA_DON" },
@@ -71,6 +71,7 @@ function DetailBill() {
   const [payMentNo, setPayMentNo] = useState(false);
   const [paymentPostpaid, setPaymentPostPaid] = useState(0);
   const { Option } = Select;
+  const [shipFee, setShipFee] = useState(0);
 
   const formatCurrency = (value) => {
     const formatter = new Intl.NumberFormat("vi-VN", {
@@ -88,6 +89,14 @@ function DetailBill() {
     });
     BillApi.fetchDetailBill(id).then((res) => {
       dispatch(getBill(res.data.data));
+      console.log(res.data.data);
+      setBillRequest({
+        name: res.data.data.userName,
+        phoneNumber: res.data.data.phoneNumber,
+        address: res.data.data.address,
+        moneyShip: res.data.data.moneyShip,
+        note: res.data.data.note,
+      })
       var index = listStatus.findIndex(
         (item) => item.status == res.data.data.statusBill
       );
@@ -145,40 +154,44 @@ function DetailBill() {
   };
   //load data phí ship và ngày ship
   const handleWardChange = (value, valueWard) => {
-    // form.setFieldsValue({ toDistrictId: valueDistrict.valueDistrict });
+    const totalQuantity = products.length > 0 ? products.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.quantity;
+    }, 0) : 1;
     setAddress({ ...address, wards: valueWard.value });
+    if (totalQuantity > 2) {
+      setShipFee(0);
+    } else {
     AddressApi.fetchAllMoneyShip(
       valueWard.valueDistrict,
-      valueWard.valueWard
+      valueWard.valueWard,
+      totalQuantity
     ).then((res) => {
-      // setShipFee(res.data.data.total);
+      setShipFee(res.data.data.total);
     });
-    AddressApi.fetchAllDayShip(
-      valueWard.valueDistrict,
-      valueWard.valueWard
-    ).then((res) => {
-      const leadtimeInSeconds = res.data.data.leadtime;
-      const formattedDate = moment.unix(leadtimeInSeconds).format("DD/MM/YYYY");
-      // setDayShip(formattedDate);
-    });
+  }
+    
   };
 
   const [form] = Form.useForm();
-
+  
   // begin cancelBill
   const [isModalCanCelOpen, setIsModalCanCelOpen] = useState(false);
   const showModalCanCel = () => {
     setIsModalCanCelOpen(true);
   };
   const handleCanCelOk = () => {
+
     setIsModalCanCelOpen(false);
+ if (statusBill.actionDescription == "") {
+      toast.error("Vui lòng nhập mô tả");
+    } else {
     Modal.confirm({
       title: "Xác nhận",
       content: "Bạn có đồng ý hủy không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
-      onOk: () => {
-        BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
+      onOk: async() => {
+        await BillApi.changeCancelStatusBill(id, statusBill).then((res) => {
           dispatch(getBill(res.data.data));
           var index = listStatus.findIndex(
             (item) => item.status == res.data.data.statusBill
@@ -199,13 +212,18 @@ function DetailBill() {
           dispatch(addStatusPresent(index));
           dispatch(addBillHistory(history));
         });
+        await PaymentsMethodApi.findByIdBill(id).then((res) => {
+          setPayMentNo(res.data.data.some((item) => item.status === "TRA_SAU"));
+          dispatch(getPaymentsMethod(res.data.data));
+        });
         setIsModalCanCelOpen(false);
-        toast("Hủy hóa đơn thành công");
+        toast.success("Hủy hóa đơn thành công");
       },
       onCancel: () => {
         setIsModalCanCelOpen(false);
       },
     });
+  }
 
     setStatusBill({
       actionDescription: "",
@@ -255,7 +273,7 @@ function DetailBill() {
         await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
           dispatch(getBillHistory(res.data.data));
         });
-        toast("Thanh toán thành công");
+        toast.success("Thanh toán thành công");
       },
       onCancel: () => {
         setIsModalOpenChangeStatus(false);
@@ -303,7 +321,7 @@ function DetailBill() {
             dispatch(getBillHistory(res.data.data));
             console.log(res.data.data);
           });
-          toast("Thanh toán thành công");
+          toast.success("Thanh toán thành công");
           setIsModalPayMentOpen(false);
           setStatusBill({
             actionDescription: "",
@@ -388,15 +406,10 @@ function DetailBill() {
       .filter((key) => key !== "note" && key !== "address")
       .every((key) => billRequest[key] !== "");
   };
-  const checkNotEmptyAddress = () => {
-    return (
-      Object.keys(address).filter((key) => address[key] !== "").length ===
-      Object.keys(address).length - 1
-    );
-  };
+
   const handleOkBill = () => {
-    var addressuser = "";
-    if (!checkNotEmptyAddress()) {
+    var addressuser = billRequest.address;
+    if (address.detail != '' && address.wards != '' && address.district != '' && address.city != '') {
       addressuser =
         address.detail +
         ", " +
@@ -406,7 +419,13 @@ function DetailBill() {
         ", " +
         address.city;
     }
-    setBillRequest({ ...billRequest, address: addressuser });
+    const data = {
+      name: String(billRequest.name).trim(),
+      phoneNumber: billRequest.phoneNumber.trim(),
+      address: addressuser.trim() ,
+      moneyShip: shipFee,
+      note: billRequest.note.trim(),
+    }
     if (checkNotEmptyBill()) {
       Modal.confirm({
         title: "Xác nhận",
@@ -414,7 +433,7 @@ function DetailBill() {
         okText: "Đồng ý",
         cancelText: "Hủy",
         onOk: async () => {
-          await BillApi.updateBill(id, billRequest).then((res) => {
+          await BillApi.updateBill(id, data).then((res) => {
             dispatch(getBill(res.data.data));
             var index = listStatus.findIndex(
               (item) => item.status == res.data.data.statusBill
@@ -427,7 +446,7 @@ function DetailBill() {
             }
             dispatch(addStatusPresent(index));
           });
-          toast("Thay đổi hóa đơn thành công");
+          toast.success("Thay đổi hóa đơn thành công");
           setIsModalBillOpen(false);
         },
         onCancel: () => {
@@ -510,7 +529,7 @@ function DetailBill() {
 
   const handleOkRefundProduct = () => {
     if (quantity < 1) {
-      toast("vui lòng nhập số lượng lớn hơn 0 ");
+      toast.warning("vui lòng nhập số lượng lớn hơn 0 ");
     } else {
       var listProduct = [...detailProductInBill];
       var index = listProduct.findIndex((item) => item.id == idProductInBill);
@@ -539,7 +558,7 @@ function DetailBill() {
             note: refundProduct.note,
           };
           await BillApi.refundProduct(data).then((res) => {
-            toast("Hoàn hàng thành công");
+            toast.success("Hoàn hàng thành công");
           });
           await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
             dispatch(getProductInBillDetail(res.data.data));
@@ -615,7 +634,7 @@ function DetailBill() {
 
   const handleOkUpdateProduct = () => {
     if (quantity < 1 && quantity < detaiProduct.quantity) {
-      toast(
+      toast.warning(
         "vui lòng nhập số lượng lớn hơn 0 và nhỏ hơn " + detaiProduct.quantity
       );
     } else {
@@ -648,7 +667,7 @@ function DetailBill() {
             };
             await BillApi.updateProductInBill(idProductInBill, data).then(
               (res) => {
-                toast("Thay đổi thành công");
+                toast.success("Thay đổi thành công");
               }
             );
             await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
@@ -736,12 +755,6 @@ function DetailBill() {
     if (statusBill.actionDescription == "") {
       toast.error("Vui lòng nhập mô tả");
     } else {
-      // if (
-      //   statusBill.totalMoney < bill.totalMoney &&
-      //   bill.statusBill == "VAN_CHUYEN" && paymentPostpaid != 0
-      // ) {
-      //   toast.error("Số tiền thanh toán không đủ");
-      // } else {
         Modal.confirm({
           title: "Xác nhận",
           content: "Bạn có đồng ý xác nhận thanh toán không?",
@@ -772,7 +785,7 @@ function DetailBill() {
             await BillApi.fetchAllHistoryInBillByIdBill(id).then((res) => {
               dispatch(getBillHistory(res.data.data));
             });
-            toast("Xác nhận thành công");
+            toast.success("Xác nhận thành công");
             setIsModalOpenChangeStatus(false);
           },
           onCancel: () => {
@@ -1133,15 +1146,25 @@ function DetailBill() {
 
   // begin delete product
 
+  const xuatPdf =() => {
+    BillApi.exportPdf(id).then(
+      (res) => {
+     
+      },
+      (err) => {
+        console.log(err);
+      }
+    )
+  }
   const removeProductInBill = (idProduct, size) => {
     Modal.confirm({
       title: "Xác nhận",
-      content: "Bạn có xác nhận xóa sản phẩmkhông?",
+      content: "Bạn có xác nhận xóa sản phẩm không?",
       okText: "Đồng ý",
       cancelText: "Hủy",
       onOk: async () => {
         await BillApi.removeProductInBill(idProduct, size).then((res) => {
-          toast("xóa thành công");
+          toast.warning("xóa thành công");
         });
         await BillApi.fetchAllProductsInBillByIdBill(id).then((res) => {
           dispatch(getProductInBillDetail(res.data.data));
@@ -1215,8 +1238,8 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Col>
-                  <Col span={statusPresent < 2 ? 6 : 0}>
-                    {statusPresent < 2 ? (
+                  <Col span={statusPresent < 5 ? 6 : 0}>
+                    {statusPresent < 5 ? (
                       <Button
                         type="danger"
                         onClick={() => showModalCanCel()}
@@ -1265,91 +1288,6 @@ function DetailBill() {
                 form={form}
                 initialValues={initialValues}
               >
-                {/* {bill.statusBill === "VAN_CHUYEN" && paymentPostpaid != 0? (
-                  <div>
-                    <Row style={{ width: "100%", marginTop: "10px" }}>
-                      <Col span={24} style={{ marginTop: "10px" }}>
-                        <label className="label-bill" style={{ top: "-15px" }}>
-                          Giá
-                        </label>
-                        <Form.Item
-                          label=""
-                          name="price"
-                          // style={{ fontWeight: "bold" }}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Vui lòng nhập số tiền",
-                            },
-                          ]}
-                        >
-                          <NumberFormat
-                            thousandSeparator={true}
-                            suffix=" VND"
-                            placeholder="Vui lòng nhập số tiền"
-                            style={{
-                              width: "100%",
-                              position: "relative",
-                              height: "37px",
-                            }}
-                            customInput={Input}
-                            onChange={(e) =>
-                              onChangeDescStatusBill(
-                                "totalMoney",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row style={{ width: "100%" }}>
-                      <Col span={24} style={{ marginTop: "10px" }}>
-                        <label
-                          className="label-bill"
-                          style={{ marginTop: "-4px" }}
-                        >
-                          Hình thức
-                        </label>
-                        <Select
-                          showSearch
-                          style={{
-                            width: "100%",
-                            margin: "10px 0",
-                            position: "relative",
-                          }}
-                          placeholder="Chọn hình thức"
-                          optionFilterProp="children"
-                          onChange={(value) =>
-                            onChangeDescStatusBill("method", value)
-                          }
-                          defaultValue={statusBill.method}
-                          filterOption={(input, option) =>
-                            (option?.label ?? "")
-                              .toLowerCase()
-                              .includes(input.toLowerCase())
-                          }
-                          options={[
-                            {
-                              value: "TIEN_MAT",
-                              label: "Tiền mặt",
-                            },
-                            {
-                              value: "CHUYEN_KHOAN",
-                              label: "Chuyển khoản",
-                            },
-                            {
-                              value: "TIEN_MAT_VA_CHUYEN_KHOAN",
-                              label: "Tiền mặt và chuyển khoản",
-                            },
-                          ]}
-                        />
-                      </Col>
-                    </Row>
-                  </div>
-                ) : (
-                  <div></div>
-                )} */}
                 <Row style={{ width: "100%" }}>
                   <Col span={24} style={{ marginTop: "20px" }}>
                     <label className="label-bill">Mô Tả</label>
@@ -1385,7 +1323,7 @@ function DetailBill() {
                         onChange={(e) =>
                           onChangeDescStatusBill(
                             "actionDescription",
-                            e.target.value
+                            e.target.value.trim()
                           )
                         }
                       />
@@ -1443,7 +1381,7 @@ function DetailBill() {
                         onChange={(e) =>
                           onChangeDescStatusBill(
                             "actionDescription",
-                            e.target.value
+                            e.target.value.trim()
                           )
                         }
                       />
@@ -1513,7 +1451,7 @@ function DetailBill() {
             >
               Xác nhận thanh toán
             </Button> */}
-            {payMentNo && statusPresent == 3 ? (
+            {payMentNo && statusPresent == 4 ? (
               <Button
                 type="dashed"
                 align={"end"}
@@ -1555,7 +1493,7 @@ function DetailBill() {
                   fontWeight: "500",
                 }}
               >
-                Thông tin đơn hàng
+                Thông tin đơn hàng:  {bill.code}
               </h2>
             </Col>
             <Col span={2}>
@@ -1583,6 +1521,10 @@ function DetailBill() {
                       ? "Tạo Hóa đơn"
                       : bill.statusBill == "CHO_XAC_NHAN"
                       ? "Chờ xác nhận"
+                      : bill.statusBill == "XAC_NHAN"
+                      ? "Xác nhận"
+                      : bill.statusBill == "CHO_VAN_CHUYEN"
+                      ? "Chờ chờ vận chuyển"
                       : bill.statusBill === "VAN_CHUYEN"
                       ? "Đang vận chuyển"
                       : bill.statusBill === "DA_THANH_TOAN"
@@ -1724,16 +1666,59 @@ function DetailBill() {
                   {index + 1}
                 </Col>
                 <Col span={5}>
-                  <img
-                    src={item.image}
-                    alt="Ảnh sản phẩm"
-                    style={{
-                      width: "170px",
-                      borderRadius: "10%",
-                      height: "140px",
-                      marginLeft: "5px",
-                    }}
-                  />
+                <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={item.image}
+            alt="Ảnh sản phẩm"
+            style={{ width: "100px", borderRadius: "10%", height: "100px" }}
+          />
+          {item.promotion !== null && (
+            <div
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "0px",
+                padding: "0px",
+                cursor: "pointer",
+                borderRadius: "50%",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faBookmark}
+                style={{
+                  ...getPromotionColor(item.promotion),
+                  fontSize: "3.5em",
+                }}
+              />
+              <span
+                style={{
+                  position: "absolute",
+                  top: "calc(50% - 10px)", // Đặt "50%" lên trên biểu tượng (từ 50% trừ 10px)
+                  left: "50%", // Để "50%" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "50%" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                {`${item.promotion}%`}
+              </span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: "60%", 
+                  left: "50%", // Để "Giảm" nằm chính giữa biểu tượng
+                  transform: "translate(-50%, -50%)", // Dịch chuyển "Giảm" đến vị trí chính giữa
+                  fontSize: "0.8em",
+                  fontWeight: "bold",
+                  ...getPromotionStyle(item.promotion),
+                }}
+              >
+                Giảm
+              </span>
+            </div>
+          )}
+        </div>
                 </Col>
                 <Col span={10}>
                   <Row>
@@ -1749,8 +1734,23 @@ function DetailBill() {
                     </span>{" "}
                   </Row>
                   <Row>
-                    <span style={{ color: "red", fontWeight: "500" }}>
-                      {formatCurrency(item.price)}
+                    {
+                      item.promotion != null ? (<span style={{fontSize: '12px',marginTop: "4px"}}>
+                      <del>
+                      {formatCurrency(item.price /(1-item.promotion/100))}
+                      </del>
+                  </span>): <span></span>
+                    }
+                    <span
+                      style={{
+                        color: "red",
+                        fontWeight: "500",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {item.price >= 1000
+                        ? formatCurrency(item.price)
+                        : item.price + " VND"}
                     </span>{" "}
                   </Row>
                   <Row>
@@ -1778,7 +1778,7 @@ function DetailBill() {
                       : item.price * item.quantity + " đ"}
                   </span>{" "}
                 </Col>
-                <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+                {/* <Col span={5} style={{ display: "flex", alignItems: "center" }}>
                   <Row>
                     <Col span={12}>
                       {bill.statusBill == "TAO_HOA_DON" ||
@@ -1849,7 +1849,7 @@ function DetailBill() {
                       <div></div>
                     )}
                   </Row>
-                </Col>
+                </Col> */}
               </Row>
             );
           })}
@@ -1857,8 +1857,8 @@ function DetailBill() {
         <Row style={{ width: "100%", marginTop: "20px" }} justify={"end"}>
           <Col span={10}>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={7}></Col>
-              <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+              <Col span={5}></Col>
+              <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
                 Tiền hàng :
               </Col>
               <Col span={10} align={"end"}>
@@ -1867,10 +1867,10 @@ function DetailBill() {
                 </span>
               </Col>
             </Row>
-            {bill.moneyShip == undefined || bill.moneyShip == "" ? (
+            {bill.moneyShip != undefined || bill.moneyShip != "" ? (
               <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-                <Col span={7}></Col>
-                <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+                <Col span={5}></Col>
+                <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
                   Phí vận chuyển :
                 </Col>
                 <Col span={10} align={"end"}>
@@ -1884,8 +1884,8 @@ function DetailBill() {
             )}
 
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={7}></Col>
-              <Col span={6} style={{ fontWeight: "bold", fontSize: "16px" }}>
+              <Col span={5}></Col>
+              <Col span={9} style={{ fontWeight: "bold", fontSize: "16px" }}>
                 Tiền giảm :{" "}
               </Col>
               <Col span={10} align={"end"}>
@@ -1895,9 +1895,9 @@ function DetailBill() {
               </Col>
             </Row>
             <Row style={{ marginLeft: "20px", marginTop: "8px" }}>
-              <Col span={7}></Col>
+              <Col span={5}></Col>
               <Col
-                span={6}
+                span={9}
                 style={{
                   marginBottom: "40px",
                   fontWeight: "bold",

@@ -13,6 +13,7 @@ public abstract class VnPayConstant {
     public static String vnp_HashSecret = "OOVYIJVYUBGEZMREEZTJRFKHSLGVTJSE";
 
     public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    public static String vnp_Refound ="https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     public static String vnp_BankCode = "";
     public static String vnp_CurrCode = "VND";
 //    public static String vnp_IpAddr = "0:0:0:0:0:0:0:1";

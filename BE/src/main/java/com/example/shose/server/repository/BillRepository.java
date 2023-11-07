@@ -7,6 +7,7 @@ import com.example.shose.server.dto.response.statistical.StatisticalBestSellingP
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalStatusBillResponse;
 import com.example.shose.server.entity.Bill;
 import com.example.shose.server.dto.request.bill.BillRequest;
@@ -70,10 +71,11 @@ public interface BillRepository extends JpaRepository<Bill, String> {
                          OR bi.user_name LIKE :#{#request.key}
                          OR bi.code LIKE :#{#request.key}
                          OR bi.phone_number LIKE :#{#request.key})
+               AND ( :role = 'ADMIN' OR bi.id_employees = :id )
                GROUP BY   bi.id, bi.code, bi.created_date, IF(usac.full_name IS NULL, cu.full_name, usac.full_name ) ,   bi.status_bill, bi.total_money, bi.item_discount 
-                ORDER BY bi.created_date DESC          
+                ORDER BY bi.created_date ASC          
                 """, nativeQuery = true)
-        List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request);
+        List<BillResponseAtCounter> findAllBillAtCounterAndStatusNewBill(@Param("id") String id,@Param("role") String role, FindNewBillCreateAtCounterRequest request);
 
         @Query(value = """
                 SELECT  ROW_NUMBER() OVER( ORDER BY bi.created_date ASC ) AS stt, IF(bi.id_account IS NULL, cu.id, usac.id )  AS id ,  IF(usac.full_name IS NULL, cu.full_name, usac.full_name )  AS userName   FROM bill bi
@@ -165,5 +167,20 @@ public interface BillRepository extends JpaRepository<Bill, String> {
     ORDER BY completion_date ASC;
                           """, nativeQuery = true)
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(@Param("req") FindBillDateRequest req);
+
+    @Query(value = """
+    SELECT
+         b.completion_date AS billDate,
+         SUM(bd.quantity) AS totalProductDate
+    FROM
+         bill_detail bd
+    JOIN bill b on bd.id_bill = b.id
+    WHERE   (b.completion_date >= :#{#req.startDate} AND b.completion_date <= :#{#req.endDate} )
+        AND (b.status_bill like 'THANH_CONG')
+    GROUP BY billDate
+    ORDER BY b.completion_date ASC;
+                          """, nativeQuery = true)
+    List<StatisticalProductDateResponse> getAllStatisticalProductDate(@Param("req") FindBillDateRequest req);
     Optional<Bill> findByCode(String code);
+    Optional<Bill> findByCodeAndPhoneNumber(String code, String phoneNumber);
 }

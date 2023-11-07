@@ -1,7 +1,4 @@
-import {
-  faBookmark,
-  faEye
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Col,
@@ -29,7 +26,8 @@ import {
   SetProductDetail,
 } from "../../../app/reducer/ProductDetail.reducer";
 import { CreatePromotion } from "../../../app/reducer/Promotion.reducer";
-
+import { ModalBody, ModalCloseButton } from "@chakra-ui/react";
+const { confirm } = Modal;
 function CreateVoucherManagement() {
   const dispatch = useAppDispatch();
   const [formErrors, setFormErrors] = useState({});
@@ -146,49 +144,50 @@ function CreateVoucherManagement() {
     return convertedFormData;
   };
   const handleSubmit = () => {
-    const isFormValid =
-    formData.code &&
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận thêm",
+      content: "Bạn có chắc chắn muốn thêm khuyến mại ?",
+      okText: "Thêm",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.code &&
+          formData.name &&
+          formData.value &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate;
 
-    if (!isFormValid) {
-      const errors = {
-        code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
-        value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+        if (!isFormValid) {
+          const errors = {
+            code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
+            value: !formData.value ? "Vui lòng nhập giá trị giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
 
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
-    console.log(formData.idProductDetails);
-    // if(formData.idProductDetails === undefined){
-    //    toast.success("Bạn chưa chọn chi tiết sản phẩm cho khuyến mại!", {
-    //     autoClose: 5000,
-    //   })
-    //   return;
-    // }
-    PromotionApi.create(convertToLong()).then((res) => {
-      dispatch(CreatePromotion(res.data.data));
-      toast.success("Thêm thành công!", {
-        autoClose: 5000,
-      });
-      window.location.href = "/promotion-management";
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
+          };
+          setFormErrors(errors);
+          return;
+        }
+        PromotionApi.create(convertToLong()).then((res) => {
+          dispatch(CreatePromotion(res.data.data));
+          toast.success("Thêm thành công!", {
+            autoClose: 5000,
+          });
+          window.location.href = "/promotion-management";
+        });
+        setFormData({});
+        setListProductDetail([]);
+        onSelectChange("");
+        onSelectChangeDetail("");
+        setSelectedRowKeysDetail("");
+      },
     });
-    setFormData({});
-    setListProductDetail([]);
-    onSelectChange("");
-    onSelectChangeDetail("");
-    setSelectedRowKeysDetail("");
   };
   const closeModal = () => {
     setModal(false);
@@ -300,25 +299,29 @@ function CreateVoucherManagement() {
               backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
               backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
               borderRadius: "5px",
+              position: "relative",
             }}
           >
             {record.value !== null && (
-              <div style={{ position: "relative", display: "inline-block" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                }}
+              >
                 <FontAwesomeIcon
                   icon={faBookmark}
                   style={{
                     fontSize: "3em",
-                    color: "#ffcc00",
-                    marginTop: -10,
+                    color: record.value > 50 ? "red" : "#ffcc00",
                   }}
                 />
                 <span
                   style={{
                     position: "absolute",
-                    top: -10,
-                    left: 0,
+                    right: 0,
                     fontSize: "11px",
-                    color: "black", // Màu của văn bản
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
                     zIndex: 1, // Đặt độ sâu trên cùng
                     textAlign: "center",
                   }}
@@ -475,12 +478,7 @@ function CreateVoucherManagement() {
             <h1>Thêm khuyến mại</h1>
           </div>
 
-          <Form
-            form={form}
-            name="validateOnly"
-            layout="vertical"
-            autoComplete="off"
-          >
+          <Form name="validateOnly" layout="vertical" autoComplete="off">
             {fields.map((field, index) => {
               return (
                 <div>
@@ -489,11 +487,6 @@ function CreateVoucherManagement() {
                     label={field.label}
                     validateStatus={formErrors[field.name] ? "error" : ""}
                     help={formErrors[field.name] || ""}
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
                   >
                     {field.type === "number" && (
                       <InputNumber
@@ -560,23 +553,14 @@ function CreateVoucherManagement() {
             })}
 
             <Form.Item label=" ">
-              <Popconfirm
-                title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
-                onConfirm={() => {
-                  handleSubmit();
-                }}
-                okText="Có"
-                cancelText="Không"
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Thêm"
+                onClick={handleSubmit}
               >
-                <Button
-                  className="button-add-promotion"
-                  key="submit"
-                  title="Thêm"
-                >
-                  Thêm
-                </Button>
-              </Popconfirm>
+                Thêm
+              </Button>
             </Form.Item>
           </Form>
         </Col>
@@ -640,26 +624,24 @@ function CreateVoucherManagement() {
         </Col>
       </Row>
 
-      {modal && (
-        <Modal
-          title="Chi tiết sản phẩm - khuyễn mại"
-          visible={modal}
-          onCancel={closeModal}
-          openModal={false}
-          okButtonProps={{ style: { display: "none" } }}
-          width={1000}
-        >
-          <div>
-            <Table
-              rowKey="code"
-              columns={columnsPromotion}
-              dataSource={updatedListPromotion}
-              pagination={{ pageSize: 5 }}
-              style={{ margin: "50px" }}
-            />
-          </div>
-        </Modal>
-      )}
+      <Modal
+        title="Chi tiết sản phẩm - khuyễn mại"
+        visible={modal}
+        onCancel={closeModal}
+        openModal={false}
+        okButtonProps={{ style: { display: "none" } }}
+        width={1000}
+      >
+        <div>
+          <Table
+            rowKey="code"
+            columns={columnsPromotion}
+            dataSource={updatedListPromotion}
+            pagination={{ pageSize: 5 }}
+            style={{ margin: "50px" }}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

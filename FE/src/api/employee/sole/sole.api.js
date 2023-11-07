@@ -30,4 +30,10 @@ export class SoleApi {
       data: data,
     });
   };
+  static getSoleInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/sole/in-product-detail`,
+    });
+  };
 }

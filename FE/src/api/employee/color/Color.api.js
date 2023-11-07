@@ -37,4 +37,10 @@ export class ColorApi {
       data: data,
     });
   };
+  static getColorInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/color/in-product-detail`,
+    });
+  };
 }

@@ -15,5 +15,38 @@ export class BillClientApi {
       });
   };
 
+  //  code bill Detail 
+  static fetchDetailBill = (code,phoneNumber) => {
+    return request({
+      method: "GET",
+      url: `/client/bill/`+ code + "/"+phoneNumber
+    });
+  };
+  static fetchAllBillHistoryInBill = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/bill-history/`+ id
+    });
+  };
+  static fetchAllBillDetailInBill = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/bill-detail/`+ id
+    });
+  };
 
+  static fetchAllPayMentlInBill = (id) => {
+    return request({
+      method: "GET",
+      url: `/client/payment/bill/`+ id
+    });
+  };
+
+  static changeCancelStatusBill = (id, data) =>{
+    return request({
+      method: "PUT",
+      url: `/client/bill/cancel-status/`+ id,
+      params: data,
+    });
+  } 
 }

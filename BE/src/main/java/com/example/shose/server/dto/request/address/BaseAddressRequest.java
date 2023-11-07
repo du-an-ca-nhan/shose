@@ -29,4 +29,8 @@ public abstract class BaseAddressRequest {
     private Status status;
 
     private String userId;
+
+    private String fullName;
+
+    private String phoneNumber;
 }

@@ -19,7 +19,7 @@
 /* Để menu ẩn đi khi cuộn lên trên, sử dụng thuộc tính transform để dịch chuyển menu xuống ngoài khung nhìn */
 /* và sử dụng opacity để làm mờ menu */
 .header-menu.hidden {
-  transform: translateY(-100%);
+  transform: translateY(-150%);
   opacity: 0;
 }
 

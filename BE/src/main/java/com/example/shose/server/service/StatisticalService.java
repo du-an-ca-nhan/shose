@@ -5,7 +5,9 @@ import com.example.shose.server.dto.response.statistical.StatisticalBestSellingP
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalStatusBillResponse;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,4 +18,6 @@ public interface StatisticalService {
     List<StatisticalStatusBillResponse> getAllStatisticalStatusBill();
     List<StatisticalBestSellingProductResponse> getAllStatisticalBestSellingProduct();
     List<StatisticalBillDateResponse> getAllStatisticalBillDate(final FindBillDateRequest findBillDateRequest);
+    List<StatisticalProductDateResponse> getAllStatisticalProductDate(final FindBillDateRequest findBillDateRequest);
+
 }

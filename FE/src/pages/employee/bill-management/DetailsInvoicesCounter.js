@@ -1,14 +1,11 @@
-import { background } from "@chakra-ui/react";
-import { Button, Col, InputNumber, Row, Select, Table } from "antd";
-import React, { useEffect, useState } from "react";
-import "./style-bill.css";
-import moment from "moment";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { Button, Col, InputNumber, Row, Select, Table } from "antd";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 import { AddressApi } from "../../../api/employee/address/address.api";
 import { useAppDispatch } from "../../../app/hook";
+import "./style-bill.css";
 
-import Search from "antd/es/input/Search";
 
 function DetailsInvoicesCounter({ detailBill }) {
   var vouchers = [];

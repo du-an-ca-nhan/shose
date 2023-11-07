@@ -1,4 +1,5 @@
 import { request } from "../../../helper/request";
+
 export class CategoryApi {
   static fetchAll = (filter) => {
     return request({
@@ -23,11 +24,17 @@ export class CategoryApi {
     });
   };
 
-  static update = (id,data) => {
+  static update = (id, data) => {
     return request({
       method: "PUT",
       url: `/admin/category/${id}`,
       data: data,
+    });
+  };
+  static getCategoryInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/category/in-product-detail`,
     });
   };
 }

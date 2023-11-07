@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.material.CreateMaterialRequest;
 import com.example.shose.server.dto.request.material.FindMaterialRequest;
 import com.example.shose.server.dto.request.material.UpdateMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
+import com.example.shose.server.dto.response.material.GetMaterialInProductDetail;
 import com.example.shose.server.entity.Material;
 import jakarta.validation.Valid;
 
@@ -21,4 +22,7 @@ public interface MaterialService {
     Boolean delete(String id);
 
     Material getOneById(String id);
+
+    List<GetMaterialInProductDetail> getMaterialInProductDetail();
+
 }

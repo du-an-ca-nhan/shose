@@ -67,7 +67,14 @@ export class AddressApi {
     });
   };
 
-  static fetchAllMoneyShip = (to_district_id, to_ward_code) => {
+  static fetchAllMoneyShip = (to_district_id, to_ward_code, quantity) => {
+    let quantityProducts = 0;
+    if (quantity == "" || quantity == null || quantity == undefined) {
+      quantityProducts = 1;
+    } else {
+      quantityProducts = quantity;
+    }
+
     return requestAdress({
       method: "GET",
       headers: {
@@ -82,10 +89,10 @@ export class AddressApi {
         from_district_id: 1485,
         to_district_id: to_district_id,
         to_ward_code: to_ward_code,
-        height: 15,
-        length: 15,
-        weight: 1000,
-        width: 15,
+        height: 11 * quantityProducts,
+        length: 28,
+        weight: 300 * quantityProducts,
+        width: 16,
       },
     });
   };

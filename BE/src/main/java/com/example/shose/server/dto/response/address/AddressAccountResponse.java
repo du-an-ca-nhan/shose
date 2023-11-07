@@ -31,9 +31,12 @@ public interface AddressAccountResponse {
     String getStatus();
 
     @Value("#{target.fullName}")
-    String getFullname();
+    String getFullName();
 
     @Value("#{target.phoneNumber}")
     String getPhoneNumber();
+
+    @Value("#{target.userId}")
+    String getUserId();
 
 }

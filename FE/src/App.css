@@ -1,5 +1,5 @@
 .App {
-
+  position: relative;
 }
 
 .App-logo {
@@ -57,6 +57,49 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.button-on-top {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  right: 2%;
+  bottom: 5%;
+  z-index: 100;
+  border: 1px solid #ff4400;
+  background-color: #ff4400;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.button-on-top::before {
+  content: "";
+  position: fixed;
+  height: 2px;
+  width: 35px;
+  background-color: #dfdfdf;
+  bottom: 4%;
+  /* opacity: 0.3; */
+  border-radius: 100%;
+  box-shadow: 0px 1px 7px #383737;
+}
+:where(.css-dev-only-do-not-override-1m62vyb).ant-pagination .ant-pagination-item-active {
+  border-color: #ff4400;
+}
+:where(.css-dev-only-do-not-override-1m62vyb).ant-pagination .ant-pagination-item-active a {
+  color: #ff4400;
+}
+:where(.css-dev-only-do-not-override-1m62vyb).ant-pagination .ant-pagination-prev button, :where(.css-dev-only-do-not-override-1m62vyb).ant-pagination .ant-pagination-next button {
+  color: #ff4400;
+}
+:where(.css-dev-only-do-not-override-1m62vyb).ant-pagination .ant-pagination-item a {
+  color: #ff4400;
 }

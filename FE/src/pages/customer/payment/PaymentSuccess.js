@@ -6,8 +6,9 @@ import { BillClientApi } from "./../../../api/customer/bill/billClient.api";
 import { faSquareCheck,faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useCart } from "../cart/CartContext";
+import { PaymentClientApi } from "../../../api/customer/payment/paymentClient.api";
 function PayMentSuccess() {
-  const idAccount = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
 const urlObject = new URL(window.location.href);
 const vnp_ResponseCode = urlObject.searchParams.get("vnp_ResponseCode");
 const vnp_Amount = urlObject.searchParams.get("vnp_Amount");
@@ -16,6 +17,8 @@ const { updateTotalQuantity } = useCart();
 useEffect(()=>{
 if(vnp_ResponseCode==='00'){
   console.log(formBill);
+  const param = new URLSearchParams(window.location.search);
+  formBill.responsePayment = param
   onPayment(formBill)
 }
 },[])
@@ -26,9 +29,20 @@ const formatMoney = (price) => {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " VND"
     );
   };
-  const onPayment =(formBill) => {
+  const onPayment = async(formBill) => {
     if(idAccount!== null){
-      BillClientApi.createBillAccountOnline(formBill).then(
+      var data ={
+        billDetail: formBill.billDetail
+      }
+     await PaymentClientApi.changeQuantityProductAfterPayment(data).then(
+        (res) => {
+       
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
+      await BillClientApi.createBillAccountOnline(formBill).then(
         (res) => {
        
         },
@@ -77,7 +91,7 @@ const formatMoney = (price) => {
        <FontAwesomeIcon className="icon-payment-fail" icon={faTriangleExclamation} />
            <h1>Thanh toán thất bại</h1>
          <div>
-         <Link to="/payment">Thử lại</Link>
+         <Link to={idAccount === null ? "/payment":"/payment-acc"}  >Thử lại</Link>
          <Link style={{marginLeft:"10px"}} to="/home">Tiếp tục mua</Link>
          </div>
          </div>

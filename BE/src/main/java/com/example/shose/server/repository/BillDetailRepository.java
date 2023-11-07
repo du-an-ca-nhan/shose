@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ import java.util.List;
 public interface BillDetailRepository extends JpaRepository<BillDetail, String> {
 
     @Query(value = """
-            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bi.id AS id_bill, im.name AS image, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity, prde.quantity AS max_quantity, bide.status_bill from bill_detail bide
+            SELECT ROW_NUMBER() OVER( ORDER BY bide.created_date ASC ) AS stt, bide.promotion, bi.id AS id_bill, im.name AS image, bide.id, prde.id AS id_product, pr.code AS code_product, pr.name AS product_name, co.name AS name_color, si.name AS name_size, so.name AS name_sole, ma.name AS name_material, ca.name As name_category, bide.price, bide.quantity, prde.quantity AS max_quantity, bide.status_bill from bill_detail bide
             LEFT JOIN bill bi ON bide.id_bill = bi.id
             LEFT JOIN product_detail prde ON bide.id_product_detail = prde.id
             JOIN (
@@ -78,4 +79,16 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, String> 
             """, nativeQuery = true)
     int deleteAllByIdBill(@Param("id") String idBill);
 
+    @Query(value = """
+                    SELECT sum(price * quantity)  FROM bill_detail
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+    BigDecimal findTotalPayMnetByIdBill(@Param("idBill") String idBill);
+
+
+    @Query(value = """
+                    SELECT sum(quantity)  FROM bill_detail
+                    WHERE id_bill = :idBill
+                    """, nativeQuery = true)
+    String quantityProductByIdBill(@Param("idBill") String idBill);
 }

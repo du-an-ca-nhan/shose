@@ -8,6 +8,8 @@ import {
   Table,
   InputNumber,
   DatePicker,
+  Row,
+  Col,
 } from "antd";
 import { VoucherApi } from "../../../api/employee/voucher/Voucher.api";
 import { GetVoucher, SetVoucher } from "../../../app/reducer/Voucher.reducer";
@@ -48,6 +50,7 @@ const VoucherManagement = () => {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formDataSearch]);
   const updatedList = list.map((item, index) => ({
     ...item,
@@ -209,13 +212,13 @@ const VoucherManagement = () => {
       class: "input-search",
       placeholder: "Tìm kiếm",
     },
-    {
-      name: "name",
-      type: "text",
-      label: "Tên khuyễn mãi",
-      class: "input-search",
-      placeholder: "Tìm kiếm",
-    },
+    // {
+    //   name: "name",
+    //   type: "text",
+    //   label: "Tên khuyễn mãi",
+    //   class: "input-search",
+    //   placeholder: "Tìm kiếm",
+    // },
     {
       name: "value",
       type: "number",
@@ -270,70 +273,236 @@ const VoucherManagement = () => {
         <hr></hr>
 
         <div className="row-search">
-          {fieldsSearch.map((field, index) => {
-            return (
-              <div key={index}>
-                <Form.Item label={field.label}>
-                  {field.type === "number" && (
-                    <InputNumber
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name] || ""}
-                      onChange={(value) =>
-                        handleInputChangeSearch(field.name, value)
-                      }
-                      min="1"
-                    />
-                  )}
-                  {field.type === "date" && (
-                    <DatePicker
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name]}
-                      onChange={(value) => {
-                        handleInputChangeSearch(field.name, value);
-                      }}
-                      format="DD-MM-YYYY"
-                    />
-                  )}
+          <Row>
+            <Col>
+              {fieldsSearch
+                .slice(0, Math.floor(fieldsSearch.length / 3))
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelCol={{ span: 7 }}
+                        wrapperCol={{ span: 15 }}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
 
-                  {field.type === "select" && (
-                    <Select
-                      className={field.class}
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={formDataSearch[field.name] || ""}
-                      onChange={(value) =>
-                        handleInputChangeSearch(field.name, value)
-                      }
-                    >
-                      <Option value="">Tất cả</Option>
-                      {field.options.map((option, optionIndex) => (
-                        <Option key={optionIndex} value={option.value}>
-                          {option.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                  {field.type !== "date" &&
-                    field.type !== "select" &&
-                    field.type !== "number" && (
-                      <Input
-                        className={field.class}
-                        name={field.name}
-                        placeholder={field.placeholder}
-                        value={formDataSearch[field.name] || ""}
-                        onChange={(e) =>
-                          handleInputChangeSearch(field.name, e.target.value)
-                        }
-                      />
-                    )}
-                </Form.Item>
-              </div>
-            );
-          })}
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+            <Col>
+              {fieldsSearch
+                .slice(
+                  Math.floor(fieldsSearch.length / 3),
+                  Math.floor((2 * fieldsSearch.length) / 3)
+                )
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelCol={{ span: 7 }}
+                        wrapperCol={{ span: 15 }}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
+
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+            <Col>
+              {fieldsSearch
+                .slice(Math.floor((2 * fieldsSearch.length) / 3))
+                .map((field, index) => {
+                  return (
+                    <div key={index}>
+                      <Form.Item
+                        label={field.label}
+                        labelCol={{ span: 7 }}
+                        wrapperCol={{ span: 15 }}
+                      >
+                        {field.type === "number" && (
+                          <InputNumber
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                            min="1"
+                          />
+                        )}
+                        {field.type === "date" && (
+                          <DatePicker
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name]}
+                            onChange={(value) => {
+                              handleInputChangeSearch(field.name, value);
+                            }}
+                            format="DD-MM-YYYY"
+                          />
+                        )}
+
+                        {field.type === "select" && (
+                          <Select
+                            className={field.class}
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={formDataSearch[field.name] || ""}
+                            onChange={(value) =>
+                              handleInputChangeSearch(field.name, value)
+                            }
+                          >
+                            <Option value="">Tất cả</Option>
+                            {field.options.map((option, optionIndex) => (
+                              <Option key={optionIndex} value={option.value}>
+                                {option.label}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                        {field.type !== "date" &&
+                          field.type !== "select" &&
+                          field.type !== "number" && (
+                            <Input
+                              className={field.class}
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              value={formDataSearch[field.name] || ""}
+                              onChange={(e) =>
+                                handleInputChangeSearch(
+                                  field.name,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+                      </Form.Item>
+                    </div>
+                  );
+                })}
+            </Col>
+          </Row>
         </div>
 
         <div className="reset-form-search">

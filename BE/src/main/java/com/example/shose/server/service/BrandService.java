@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.brand.CreateBrandRequest;
 import com.example.shose.server.dto.request.brand.FindBrandRequest;
 import com.example.shose.server.dto.request.brand.UpdateBrandRequest;
 import com.example.shose.server.dto.response.BrandResponse;
+import com.example.shose.server.dto.response.brand.GetBrandInProductDetail;
 import com.example.shose.server.entity.Brand;
 import jakarta.validation.Valid;
 
@@ -21,4 +22,5 @@ public interface BrandService {
     Boolean delete(String id);
 
     Brand getOneById(String id);
+    List<GetBrandInProductDetail> getBrandInProductDetail();
 }

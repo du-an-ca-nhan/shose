@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.sole.CreateSoleRequest;
 import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.request.sole.UpdateSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
+import com.example.shose.server.dto.response.sole.GetSoleInProductDetail;
 import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -78,5 +79,10 @@ public class SoleServiceImpl implements SoleService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public List<GetSoleInProductDetail> getSoleInProductDetail() {
+        return soleRepository.getSoleInProductDetail();
     }
 }

@@ -64,7 +64,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
       })
       .then((values) => {
         AddressApi.update(id, values)
-          .then((res) => {
+          .then((res) => {           
             dispatch(UpdateAddress(res.data.data));
             toast.success("Cập nhật thành công");
             onCancel();
@@ -75,7 +75,7 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
             console.log("Update failed:", error);
           });
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleCancel = () => {
@@ -139,6 +139,24 @@ const ModalUpdateAddress = ({ visible, id, onCancel }) => {
           userId: "",
         }}
       >
+        <Form.Item
+          label="Họ và tên"
+          name="fullName"
+          rules={[
+            { required: true, message: "Vui lòng nhập họ tên" },
+          ]}
+        >
+          <Input placeholder="Họ và tên" />
+        </Form.Item>
+        <Form.Item
+          label="Số điện thoại"
+          name="phoneNumber"
+          rules={[
+            { required: true, message: "Vui lòng nhập số điện thoại" },
+          ]}
+        >
+          <Input placeholder="Số điện thoại" />
+        </Form.Item>
         <Form.Item
           label="Tỉnh/Thành phố"
           name="province"

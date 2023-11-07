@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.material.CreateMaterialRequest;
 import com.example.shose.server.dto.request.material.FindMaterialRequest;
 import com.example.shose.server.dto.request.material.UpdateMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
+import com.example.shose.server.dto.response.material.GetMaterialInProductDetail;
 import com.example.shose.server.entity.Material;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -78,5 +79,10 @@ public class MaterialServiceImpl implements MaterialService {
             throw new RestApiException(Message.NOT_EXISTS);
         }
         return optional.get();
+    }
+
+    @Override
+    public List<GetMaterialInProductDetail> getMaterialInProductDetail() {
+        return materialRepository.getMaterialInProductDetail();
     }
 }

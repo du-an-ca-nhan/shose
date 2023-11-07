@@ -2,6 +2,8 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.size.FindSizeRequest;
 import com.example.shose.server.dto.response.SizeResponse;
+import com.example.shose.server.dto.response.material.GetMaterialInProductDetail;
+import com.example.shose.server.dto.response.size.GetSizeInProductDetail;
 import com.example.shose.server.entity.Size;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,4 +51,12 @@ public interface SizeRepository extends JpaRepository<Size, String> {
     List<Size> findAll();
 
     Optional<Size> findByName(Integer name);
+
+    @Query(value = """
+            select s.id,s.name from size s
+            where s.id in (select pd.id_size from product_detail pd)
+            group by s.id,s.name
+            order by s.name asc 
+            """, nativeQuery = true)
+    List<GetSizeInProductDetail> getSizeInProductDetail();
 }

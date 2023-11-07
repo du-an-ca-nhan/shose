@@ -4,6 +4,7 @@ import com.example.shose.server.dto.request.color.CreateColorRequest;
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.request.color.UpdateColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
+import com.example.shose.server.dto.response.color.GetColorInProductDetail;
 import com.example.shose.server.entity.Color;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -83,5 +84,10 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public List<Color> getAllCode() {
         return colorRepository.getAllCode();
+    }
+
+    @Override
+    public List<GetColorInProductDetail> getColorInProductDetail() {
+        return colorRepository.getColorInProductDetail();
     }
 }

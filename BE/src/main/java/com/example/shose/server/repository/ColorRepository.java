@@ -2,6 +2,8 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.color.FindColorRequest;
 import com.example.shose.server.dto.response.ColorResponse;
+import com.example.shose.server.dto.response.color.GetColorInProductDetail;
+import com.example.shose.server.dto.response.sole.GetSoleInProductDetail;
 import com.example.shose.server.entity.Color;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -44,4 +46,11 @@ public interface ColorRepository extends JpaRepository<Color, String> {
 
     @Query("SELECT DISTINCT  c FROM  Color c ")
     List<Color> getAllCode ();
+
+    @Query(value = """
+            select REPLACE(c.code, '#', '%23') as code,c.name as name from color c
+            where c.id in (select pd.id_color from product_detail pd)
+            group by c.code,c.name
+            """, nativeQuery = true)
+    List<GetColorInProductDetail> getColorInProductDetail();
 }

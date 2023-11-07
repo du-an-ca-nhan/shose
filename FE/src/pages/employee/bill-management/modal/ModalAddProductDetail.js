@@ -11,8 +11,8 @@ import {
   InputNumber,
 } from "antd";
 import "./style-product.css";
-import { useAppDispatch, useAppSelector } from "../../../../app/hook";
-import { ToastContainer, toast } from "react-toastify";
+import { useAppDispatch } from "../../../../app/hook";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
@@ -24,14 +24,9 @@ import { BrandApi } from "../../../../api/employee/brand/Brand.api";
 import { ColorApi } from "../../../../api/employee/color/Color.api";
 import tinycolor from "tinycolor2";
 import { useNavigate } from "react-router-dom";
-import { ProducDetailtApi } from "../../../../api/employee/product-detail/productDetail.api";
-import ModalDetailProduct from "./ModalDetailProduct";
 import {
   addProductBillWait,
-  addProductInBillDetail,
 } from "../../../../app/reducer/Bill.reducer";
-import { BillApi } from "../../../../api/employee/bill/bill.api";
-import { size } from "lodash";
 import { ProductApi } from "../../../../api/employee/product/product.api";
 import { useSelector } from "react-redux";
 
@@ -54,6 +49,7 @@ function ModalAddProductDetail({
     price: "",
     idSizeProduct: "",
     maxQuantity: 1,
+    promotion: ""
   });
 
   // format tiền
@@ -354,6 +350,7 @@ function ModalAddProductDetail({
       price: (record.price * (100 - record.promotion)) / 100,
       idSizeProduct: record.id,
       maxQuantity: record.quantity,
+      promotion: record.promotion
     };
     dispatch(addProductBillWait(data));
     setProductSelected(data);

@@ -1,6 +1,7 @@
 package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.response.billhistory.BillHistoryResponse;
+import com.example.shose.server.entity.Bill;
 import com.example.shose.server.entity.BillHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -32,4 +33,5 @@ public interface BillHistoryRepository extends JpaRepository<BillHistory, String
             """, nativeQuery = true)
     int deleteAllByIdBill(@Param("id") String idBill);
 
+    List<BillHistory> findAllByBill(Bill bill);
 }

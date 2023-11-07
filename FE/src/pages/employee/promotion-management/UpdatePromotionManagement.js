@@ -1,7 +1,4 @@
-import {
-  faBookmark,
-  faEye
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faEye } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Col,
@@ -16,7 +13,6 @@ import {
   Table,
 } from "antd";
 import React, { useEffect, useState } from "react";
-
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import dayjs from "dayjs";
@@ -196,43 +192,50 @@ function UpdatePromotionManagement() {
     return convertedFormData;
   };
   const handleSubmit = (ids) => {
-    console.log(formData);
-    const isFormValid =
-     formData.code &&
-      formData.name &&
-      formData.value &&
-      formData.startDate &&
-      formData.endDate &&
-      formData.startDate < formData.endDate;
+    Modal.confirm({
+      title: "Xác nhận chỉnh sửa",
+      content: "Bạn có chắc chắn muốn chỉnh sửa khuyến mại ?",
+      okText: "Chỉnh sửa",
+      cancelText: "Hủy",
+      onOk() {
+        const isFormValid =
+          formData.code &&
+          formData.name &&
+          formData.value &&
+          formData.startDate &&
+          formData.endDate &&
+          formData.startDate < formData.endDate;
 
-    if (!isFormValid) {
-      const errors = {
-        code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
-        name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
-        value: !formData.value ? "Vui lòng nhập giá giảm" : "",
-        startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
-        endDate: !formData.endDate
-          ? "Vui lòng chọn ngày kết thúc"
-          : formData.startDate >= formData.endDate
-          ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
-          : "",
-      };
-      setFormErrors(errors);
-      return;
-    }
+        if (!isFormValid) {
+          const errors = {
+            code: !formData.code ? "Vui lòng nhập mã khuyễn mại" : "",
+            name: !formData.name ? "Vui lòng nhập tên khuyễn mại" : "",
+            value: !formData.value ? "Vui lòng nhập giá giảm" : "",
+            startDate: !formData.startDate ? "Vui lòng chọn ngày bắt đầu" : "",
+            endDate: !formData.endDate
+              ? "Vui lòng chọn ngày kết thúc"
+              : formData.startDate >= formData.endDate
+              ? "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+              : "",
+          };
+          setFormErrors(errors);
+          return;
+        }
 
-    PromotionApi.update(ids, convertToLong()).then((res) => {
-      dispatch(UpdatePromotion(res.data.data));
-      toast.success("Cập nhập thành công!", {
-        autoClose: 5000,
-      });
-      window.location.href = "/promotion-management";
+        PromotionApi.update(ids, convertToLong()).then((res) => {
+          dispatch(UpdatePromotion(res.data.data));
+          toast.success("Cập nhập thành công!", {
+            autoClose: 5000,
+          });
+          window.location.href = "/promotion-management";
+        });
+        setFormData({});
+        setListProductDetail([]);
+        onSelectChange("");
+        onSelectChangeDetail("");
+        setSelectedRowKeysDetail("");
+      },
     });
-    setFormData({});
-    setListProductDetail([]);
-    onSelectChange("");
-    onSelectChangeDetail("");
-    setSelectedRowKeysDetail("");
   };
   const fields = [
     {
@@ -339,32 +342,36 @@ function UpdatePromotionManagement() {
               backgroundSize: "cover", // Đặt kích thước để hình ảnh bao phủ toàn bộ phần tử
               backgroundPosition: "center", // Đặt vị trí của hình ảnh là trung tâm
               borderRadius: "5px",
+              position: "relative",
             }}
           >
             {record.value !== null && (
-             <div style={{ position: "relative", display: "inline-block" }}>
-             <FontAwesomeIcon
-               icon={faBookmark}
-               style={{
-                 fontSize: "3em",
-                 color: "#ffcc00",
-                 marginTop:-10,
-               }}
-             />
-             <span
-               style={{
-                position: "absolute",
-                top: -10,
-                left: 0,
-                fontSize: "11px",
-                color: "black", // Màu của văn bản
-                zIndex: 1, // Đặt độ sâu trên cùng
-                textAlign:"center",
-               }}
-             >
-               Giảm {record.value}%
-             </span>
-           </div>
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "3em",
+                    color: record.value > 50 ? "red" : "#ffcc00",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    fontSize: "11px",
+                    color: record.value > 50 ? "white" : "black", // Màu của văn bản
+                    zIndex: 1, // Đặt độ sâu trên cùng
+                    textAlign: "center",
+                  }}
+                >
+                  Giảm {record.value}%
+                </span>
+              </div>
             )}
           </div>
         </div>
@@ -548,16 +555,16 @@ function UpdatePromotionManagement() {
                       />
                     )}
                     {field.type === "select" && (
-            
-                        <Input
+                      <Input
                         disable
-                          className="status"
-                          name="status"
-                          value={formData["status"] === "DANG_SU_DUNG" ? "Còn hạn" : "Hết hạn" || ""}
-                      
-                        >
-                        </Input>
-                    
+                        className="status"
+                        name="status"
+                        value={
+                          formData["status"] === "DANG_SU_DUNG"
+                            ? "Còn hạn"
+                            : "Hết hạn" || ""
+                        }
+                      ></Input>
                     )}
 
                     {field.type !== "date" &&
@@ -579,23 +586,14 @@ function UpdatePromotionManagement() {
             })}
 
             <Form.Item label=" ">
-              <Popconfirm
-                title="Thông báo"
-                description="Bạn có chắc chắn muốn thêm không ?"
-                onConfirm={() => {
-                  handleSubmit(id);
-                }}
-                okText="Có"
-                cancelText="Không"
+              <Button
+                className="button-add-promotion"
+                key="submit"
+                title="Cập nhập"
+                onClick={() => handleSubmit(id)}
               >
-                <Button
-                  className="button-add-promotion"
-                  key="submit"
-                  title="Cập nhập"
-                >
-                  Cập nhập
-                </Button>
-              </Popconfirm>
+                Cập nhập
+              </Button>
             </Form.Item>
           </Form>
         </Col>

@@ -2,6 +2,8 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.material.FindMaterialRequest;
 import com.example.shose.server.dto.response.MaterialResponse;
+import com.example.shose.server.dto.response.brand.GetBrandInProductDetail;
+import com.example.shose.server.dto.response.material.GetMaterialInProductDetail;
 import com.example.shose.server.entity.Material;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -41,4 +43,10 @@ public interface MaterialRepository extends JpaRepository<Material, String> {
 
     @Query("SELECT s FROM Material s WHERE s.name =:name AND s.id <> :id")
     Material getByNameExistence(@Param("name") String name, @Param("id") String id);
+    @Query(value = """
+            select m.id,m.name from material m
+            where m.id in (select pd.id_material from product_detail pd)
+            group by m.id,m.name
+            """, nativeQuery = true)
+    List<GetMaterialInProductDetail> getMaterialInProductDetail();
 }

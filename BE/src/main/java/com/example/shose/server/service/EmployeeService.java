@@ -6,6 +6,7 @@ import com.example.shose.server.dto.request.employee.CreateEmployeeRequest;
 import com.example.shose.server.dto.request.employee.FindEmployeeRequest;
 import com.example.shose.server.dto.request.employee.UpdateEmployeeRequest;
 import com.example.shose.server.dto.response.EmployeeResponse;
+import com.example.shose.server.dto.response.user.SimpleUserResponse;
 import com.example.shose.server.entity.User;
 import jakarta.mail.MessagingException;
 import org.springframework.web.multipart.MultipartFile;

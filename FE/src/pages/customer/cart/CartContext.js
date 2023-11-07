@@ -3,7 +3,7 @@ import { CartClientApi } from "./../../../api/customer/cart/cartClient.api";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const idAccount = localStorage.getItem("idAccount")
+  const idAccount = sessionStorage.getItem("idAccount")
   const quantityInCartLocal = JSON.parse(localStorage.getItem("cartLocal"))
   const [totalQuantity, setTotalQuantity] = useState(0);
 

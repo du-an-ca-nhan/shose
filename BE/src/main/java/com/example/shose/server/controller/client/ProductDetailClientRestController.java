@@ -1,6 +1,8 @@
 package com.example.shose.server.controller.client;
 
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.infrastructure.common.PageableObject;
+import com.example.shose.server.infrastructure.common.PageableRequest;
 import com.example.shose.server.service.ProductDetailService;
 import com.example.shose.server.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +53,9 @@ public class ProductDetailClientRestController {
 
         return new ResponseObject(productDetailService.listSizeByProductAndColor(id, rawCodeColor));
     }
+    @GetMapping("/list")
+    public ResponseObject getProductDetailByCategorys(FindProductDetailByCategorysRequest request,Pageable pageable) {
+        return new ResponseObject(productDetailService.getProductDetailByCategorys(request,pageable));
+    }
+
 }

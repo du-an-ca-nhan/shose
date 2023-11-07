@@ -47,7 +47,7 @@ const ModalCreateAddress = ({ visible, onCancel, id }) => {
             console.log("Create failed:", error);
           });
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleCancel = () => {
@@ -111,7 +111,24 @@ const ModalCreateAddress = ({ visible, onCancel, id }) => {
         initialValues={{
           userId: id,
         }}
+      >   <Form.Item
+        label="Họ và tên"
+        name="fullName"
+        rules={[
+          { required: true, message: "Vui lòng nhập họ tên" },
+        ]}
       >
+          <Input placeholder="Họ và tên" />
+        </Form.Item>
+        <Form.Item
+          label="Số điện thoại"
+          name="phoneNumber"
+          rules={[
+            { required: true, message: "Vui lòng nhập số điện thoại" },
+          ]}
+        >
+          <Input placeholder="Số điện thoại" />
+        </Form.Item>
         <Form.Item
           label="Tỉnh/Thành phố"
           name="province"

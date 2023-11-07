@@ -1,0 +1,158 @@
+.box-detail-product {
+  margin-top: 50px;
+}
+
+.button-prev-card-pd {
+  font-size: 20px;
+  position: absolute;
+  left: 5%;
+}
+.button-prev-card-pd:hover {
+  color: #ff4400;
+}
+.button-next-card-pd {
+  font-size: 20px;
+  position: absolute;
+  right: 5%;
+}
+.button-next-card-pd:hover {
+  color: #ff4400;
+}
+.box-info-pd {
+  margin-left: auto;
+}
+.box-info-detail {
+  border-radius: 10px; /* Đặt bán kính cong cho tất cả bốn góc là 10px */
+  margin-top: 30px;
+}
+.ul-info-pd {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-image: linear-gradient(90deg, rgb(245, 81, 5), rgb(63, 57, 57));
+  border-image-slice: 1;
+}
+
+.box-title-info-detail {
+  height: 50px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  background: linear-gradient(90deg, rgb(245, 81, 5), rgb(63, 57, 57));
+  border-radius: 20px 20px 0 0;
+}
+.li-info-pd {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+}
+.title-info-pd {
+  width: 50%;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 600;
+}
+.content-info-pd {
+  text-align: left;
+  flex: 1;
+  font-size: 16px;
+}
+
+.name-pd {
+  font-size: 40px;
+  font-weight: 600;
+}
+.price-product-pd {
+  padding: 10px 0;
+  font-size: 20px;
+  border-bottom: 1px solid rgb(240, 240, 240);
+  color: #ff4400;
+}
+.box-color-pd {
+  padding: 10px 0;
+  border-bottom: 1px solid rgb(240, 240, 240);
+}
+.list-color-detail-pd {
+  display: flex;
+  margin-bottom: 15px;
+}
+.box-size-pd {
+  padding-top: 10px;
+}
+.img-detail-product-pd {
+  width: 500px;
+  height: 500px;
+  margin: 0 10px;
+}
+.color-product-pd {
+  margin-top: 10px;
+  margin-right: 15px;
+  width: 25px;
+  height: 25px;
+  border-radius: 30px;
+  box-shadow: 0 0 0 2px rgb(255, 255, 255), 0 0 0 3px #e6e0e0;
+  transition: box-shadow 0.3s;
+}
+.color-product-pd:hover {
+  /* border: 1px solid #000000; */
+  box-shadow: 0 0 0 3px white, 0 0 0 4px #000000;
+}
+
+.list-size-product-pd {
+  display: flex;
+  margin-bottom: 30px;
+}
+.size-product-pd {
+  margin-top: 10px;
+  width: 50px;
+  height: 45px;
+  margin-right: 5px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  border: 2px solid rgb(238, 237, 235);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+}
+
+.size-product-pd:focus,
+.size-product-pd:active,
+.size-product-pd.clicked {
+  border: 1px solid rgb(0, 0, 0);
+  outline: none;
+}
+
+.input-quantity-card-pd {
+  border-radius: 20px;
+  height: 50px;
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.add-to-card-pd {
+  display: flex;
+}
+.button-add-to-card-pd {
+  border-radius: 20px;
+  width: 300px;
+  height: 50px;
+  background-color: #000000;
+  color: white;
+  font-size: 20px;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    background-color: #ec835c;
+    cursor: pointer;
+  }
+}
+
+.size-product-pd.highlight {
+  border: 1px solid #000000;
+}

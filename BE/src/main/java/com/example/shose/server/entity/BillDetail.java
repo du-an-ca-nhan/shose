@@ -35,6 +35,8 @@ public class BillDetail extends PrimaryEntity {
     @Enumerated(EnumType.STRING)
     private StatusBill statusBill ;
 
+    private BigDecimal promotion;
+
     @ManyToOne
     @JoinColumn(name = "id_product_detail")
     private ProductDetail productDetail;

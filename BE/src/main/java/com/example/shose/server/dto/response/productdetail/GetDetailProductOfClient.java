@@ -27,4 +27,12 @@ public interface GetDetailProductOfClient {
 
     @Value("#{target.nameSize}")
     String getNameSize();
+    @Value("#{target.nameCategory}")
+    String getNameCategory();
+    @Value("#{target.nameBrand}")
+    String getNameBrand();
+    @Value("#{target.nameMaterial}")
+    String getNameMaterial();
+    @Value("#{target.nameSole}")
+    String getNameSole();
 }

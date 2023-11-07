@@ -5,6 +5,7 @@ import com.example.shose.server.dto.response.statistical.StatisticalBestSellingP
 import com.example.shose.server.dto.response.statistical.StatisticalBillDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalDayResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalMonthlyResponse;
+import com.example.shose.server.dto.response.statistical.StatisticalProductDateResponse;
 import com.example.shose.server.dto.response.statistical.StatisticalStatusBillResponse;
 import com.example.shose.server.repository.BillRepository;
 import com.example.shose.server.service.StatisticalService;
@@ -72,6 +73,23 @@ public class StatisticalServiceImpl implements StatisticalService {
             return billRepository.getAllStatisticalBillDate(req);
         } else {
             return billRepository.getAllStatisticalBillDate(req);
+        }
+    }
+
+    @Override
+    public List<StatisticalProductDateResponse> getAllStatisticalProductDate(FindBillDateRequest req) {
+        if (req.getStartDate() == null && req.getEndDate() == null) {
+            req.setStartDate(getStartMonth());
+            req.setEndDate(getEndMonth());
+            return billRepository.getAllStatisticalProductDate(req);
+        } else if (req.getStartDate() == null && req.getEndDate() != null) {
+            req.setStartDate(getStartMonth());
+            return billRepository.getAllStatisticalProductDate(req);
+        } else if (req.getStartDate() != null && req.getEndDate() == null) {
+            req.setEndDate(getEndMonth());
+            return billRepository.getAllStatisticalProductDate(req);
+        } else {
+            return billRepository.getAllStatisticalProductDate(req);
         }
     }
 

@@ -28,11 +28,11 @@ public interface AddressUserReponse {
     @Value("#{target.status}")
     String getStatus();
 
-    @Value("#{target.fullname}")
-    String getFullname();
+    @Value("#{target.fullName}")
+    String getFullName();
 
-    @Value("#{target.phonenumber}")
-    String getPhonenumber();
+    @Value("#{target.phoneNumber}")
+    String getPhoneNumber();
 
     @Value("#{target.provinceId}")
     String getProvinceId();

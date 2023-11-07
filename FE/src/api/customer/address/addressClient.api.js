@@ -1,13 +1,13 @@
-import {request,requestAdress } from "../../../helper/request";
+import { request, requestAdress } from "../../../helper/request";
 export class AddressClientApi {
   static getAllProvince = () => {
     return requestAdress({
-        method: "GET",
-        headers: {
-          token: "d73043b1-2777-11ee-b394-8ac29577e80e",
-        },
-        url: `https://online-gateway.ghn.vn/shiip/public-api/master-data/province`,
-      });
+      method: "GET",
+      headers: {
+        token: "d73043b1-2777-11ee-b394-8ac29577e80e",
+      },
+      url: `https://online-gateway.ghn.vn/shiip/public-api/master-data/province`,
+    });
   };
   static getAlldistrict = (codeCity) => {
     return requestAdress({
@@ -76,6 +76,42 @@ export class AddressClientApi {
       url: `/client/address/${idAccount}`,
     });
   };
-
-
+  static getListByAccount = (idAccount) => {
+    return request({
+      method: "GET",
+      url: `/client/address/list/${idAccount}`,
+    });
+  };
+  static setDefault = (idAddress) => {
+    return request({
+      method: "POST",
+      url: `/client/address/setDefault/${idAddress}`,
+    });
+  };
+  static updateAddressClient = (data) => {
+    return request({
+      method: "POST",
+      url: `/client/address/update`,
+      data: data
+    });
+  };
+  static createAddressClient = (data) => {
+    return request({
+      method: "POST",
+      url: `/client/address/create`,
+      data: data
+    });
+  };
+  static deleteAddressClient = (idAddress) => {
+    return request({
+      method: "DELETE",
+      url: `/client/address/delete/${idAddress}`,
+    });
+  };
+  static detailAddressClient = (idAddress) => {
+    return request({
+      method: "GET",
+      url: `/client/address/detail/${idAddress}`,
+    });
+  };
 }

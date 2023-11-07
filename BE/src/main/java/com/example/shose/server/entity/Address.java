@@ -40,6 +40,10 @@ public class Address extends PrimaryEntity {
 
     private String wardCode;
 
+    private String fullName;
+
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 

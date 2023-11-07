@@ -3,6 +3,8 @@ package com.example.shose.server.service.impl;
 import com.example.shose.server.dto.ProductDetailDTO;
 import com.example.shose.server.dto.request.image.ImageColorFilerequestDTO;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysConvertRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.UpdateQuantityAndPrice;
@@ -25,6 +27,7 @@ import com.example.shose.server.entity.Sole;
 import com.example.shose.server.infrastructure.cloudinary.CloudinaryResult;
 import com.example.shose.server.infrastructure.cloudinary.QRCodeAndCloudinary;
 import com.example.shose.server.infrastructure.cloudinary.UploadImageToCloudinary;
+import com.example.shose.server.infrastructure.common.PageableRequest;
 import com.example.shose.server.infrastructure.constant.GenderProductDetail;
 import com.example.shose.server.infrastructure.constant.Message;
 import com.example.shose.server.infrastructure.constant.Status;
@@ -45,6 +48,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -321,6 +326,36 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
+    public Page<GetProductDetail> getProductDetailByCategorys( FindProductDetailByCategorysRequest request,Pageable pageRequest) {
+        Pageable pageable = PageRequest.of(pageRequest.getPageNumber(), pageRequest.getPageSize());
+        List<String> colorList = request.getColor() != null ? Arrays.asList(request.getColor().split(",")) : null;
+        List<String> brandList = request.getBrand() != null ? Arrays.asList(request.getBrand().split(",")) : null;
+        List<String> materialList = request.getMaterial() != null ? Arrays.asList(request.getMaterial().split(",")) : null;
+        List<String> sizeList = request.getNameSize() != null ? Arrays.asList(request.getNameSize().split(",")) : null;
+        List<String> soleList = request.getSole() != null ? Arrays.asList(request.getSole().split(",")) : null;
+        List<String> categoryList = request.getCategory() != null ? Arrays.asList(request.getCategory().split(",")) : null;
+        List<String> statusList = request.getStatus() != null ? Arrays.asList(request.getStatus().split(",")) : null;
+
+        System.out.println(request);
+
+        FindProductDetailByCategorysConvertRequest detail = FindProductDetailByCategorysConvertRequest.builder()
+                .colors(colorList)
+                .brands(brandList)
+                .materials(materialList)
+                .nameSizes(sizeList)
+                .soles(soleList)
+                .categorys(categoryList)
+                .statuss(statusList)
+                .gender(request.getGender())
+                .minPrice(request.getMinPrice())
+                .maxPrice(request.getMaxPrice())
+                .sellOff(request.getSellOff())
+                .newProduct(request.getNewProduct())
+                .build();
+        System.out.println(detail);
+        return productDetailRepository.getProductDetailByCategorys(pageable,detail,request);
+    }
+
     public ProductDetailReponse checkQuantityAndPriceByProducDetailByAll(CreateProductDetailRequest request) {
         return productDetailRepository.getOneProductDetailByAll(request);
     }

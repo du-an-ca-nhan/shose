@@ -9,4 +9,12 @@ export class PaymentClientApi {
         data: data
       });
     };
+
+    static changeQuantityProductAfterPayment = ( data) => {
+      return request({
+        method: "POST",
+        url: `/client/payment/change-quantity-payment` ,
+        data: data
+      });
+    };
   }

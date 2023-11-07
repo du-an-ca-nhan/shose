@@ -1,5 +1,7 @@
 package com.example.shose.server.repository;
 
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysConvertRequest;
+import com.example.shose.server.dto.request.productdetail.FindProductDetailByCategorysRequest;
 import com.example.shose.server.dto.request.productdetail.CreateProductDetailRequest;
 import com.example.shose.server.dto.request.productdetail.FindProductDetailRequest;
 import com.example.shose.server.dto.response.ProductDetailDTOResponse;
@@ -38,7 +40,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE p2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,
@@ -60,7 +67,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 JOIN size s2 on detail.id_size = s2.id
                 JOIN color c2 on detail.id_color = c2.id
                 LEFT JOIN size si ON detail.id_size = si.id
-                WHERE i.status = true  
+                WHERE i.status = true   
                 AND p.id = :#{#req.idProduct}
                 AND  ( :#{#req.size} = 0 OR s2.name = :#{#req.size} OR :#{#req.size} = '' )
                 AND  ( :#{#req.color} IS NULL OR c2.code LIKE %:#{#req.color}% OR :#{#req.color} LIKE '' )
@@ -259,7 +266,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 pd.price as price,
                 promotion_summary.valuePromotion as valuePromotion,
                 pd.created_date as createdDate
-            FROM product_detail pd
+               FROM product_detail pd
                      LEFT JOIN (
                 SELECT
                     pd.id as pd_id,
@@ -291,12 +298,21 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                 pd.price as price,
                 pd.quantity as quantity,
                 c.code as codeColor,
-                s.name as nameSize
+                s.name as nameSize,
+                c2.name as nameCategory,
+                b.name as nameBrand,
+                m.name as nameMaterial,
+                s2.name as nameSole
+            
             from product_detail pd
                      left JOIN image i on i.id_product_detail = pd.id
                      JOIN product p on pd.id_product = p.id
                      JOIN color c on c.id = pd.id_color
                      JOIN size s on s.id = pd.id_size
+                     JOIN category c2 on pd.id_category = c2.id
+                     JOIN brand b on pd.id_brand = b.id
+                     JOIN material m on pd.id_material = m.id
+                     JOIN sole s2 on pd.id_sole = s2.id
             where pd.id = :id
                  """, nativeQuery = true)
     GetDetailProductOfClient getDetailProductOfClient(@Param("id") String id);
@@ -354,6 +370,56 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
             """, nativeQuery = true)
     List<ListSizeOfItemCart> listSizeByProductAndColor(@Param("idProduct") String idProduct, @Param("codeColor") String codeColor);
 
+    @Query(value = """
+            SELECT
+                p.id as idProduct,
+                pd.id as idProductDetail,
+                REPLACE(cl.code, '#', '%23') as codeColor,
+                s.name as nameSize,
+                GROUP_CONCAT(i.name) as image,
+                p.name as nameProduct,
+                pd.price as price,
+                promotion_summary.valuePromotion as valuePromotion,
+                pd.created_date as createdDate
+            
+            FROM product_detail pd
+                     LEFT JOIN (
+                SELECT
+                    pd.id as pd_id,
+                    SUM(po.value) as valuePromotion,
+                    ppd.status as status
+                FROM product_detail pd
+                         LEFT JOIN promotion_product_detail ppd ON pd.id = ppd.id_product_detail
+                         LEFT JOIN promotion po ON po.id = ppd.id_promotion
+                       WHERE  ppd.status = 'DANG_SU_DUNG' OR ppd.status IS NULL
+                GROUP BY pd.id , ppd.status
+            ) promotion_summary ON pd.id = promotion_summary.pd_id
+                     LEFT JOIN  product p ON pd.id_product = p.id
+                     LEFT JOIN  color cl ON cl.id = pd.id_color
+                     LEFT JOIN  size s ON s.id = pd.id_size
+                     LEFT JOIN  sole sl ON sl.id = pd.id_sole
+                     LEFT JOIN material m ON pd.id_material = m.id
+                     LEFT JOIN category ct ON pd.id_category = ct.id
+                     LEFT JOIN brand b ON pd.id_brand = b.id
+                     LEFT JOIN image i ON i.id_product_detail = pd.id
+            where 
+                 ( :#{#res.nameSize} IS NULL OR :#{#res.nameSize} ='' OR s.name in (:#{#req.nameSizes}) )
+                AND  ( :#{#res.color} IS NULL OR :#{#res.color} ='' OR cl.name in (:#{#req.colors}))
+                AND  ( :#{#res.brand} IS NULL OR :#{#res.brand} ='' OR b.name in (:#{#req.brands}))
+                AND  ( :#{#res.material} IS NULL OR :#{#res.material} =''  OR m.name in (:#{#req.materials}) ) 
+                AND  ( :#{#res.sole} IS NULL OR :#{#res.sole} ='' OR sl.name in (:#{#req.soles}))
+                AND  ( :#{#res.category} IS NULL OR :#{#res.category} ='' OR ct.name in (:#{#req.categorys}) )
+                AND  ( :#{#res.status} IS NULL OR :#{#res.status} =''  OR pd.status in (:#{#req.statuss}) )
+                AND  ( :#{#res.gender} IS NULL OR :#{#res.gender} ='' OR pd.gender LIKE :#{#req.gender} )
+                AND  ( :#{#res.minPrice} IS NULL OR :#{#res.minPrice} ='' OR pd.price >= :#{#req.minPrice} ) 
+                AND  ( :#{#res.maxPrice} IS NULL  OR :#{#res.maxPrice} = '' OR  pd.price <= :#{#req.maxPrice} )
+                AND  ( :#{#res.newProduct} IS NULL  OR :#{#res.newProduct} = '' OR DATE_FORMAT(FROM_UNIXTIME(pd.created_date / 1000), '%Y-%m-%d %H:%i:%s') between DATE_SUB(NOW(), INTERVAL 15 DAY)  and  NOW())
+                AND ( :#{#res.sellOff} IS NULL  OR :#{#res.sellOff} = '' OR promotion_summary.status =true)
+                GROUP BY pd.id,valuePromotion
+                """, nativeQuery = true)
+    Page<GetProductDetail> getProductDetailByCategorys(Pageable pageable,
+                                                       @Param("req") FindProductDetailByCategorysConvertRequest req,
+                                                       @Param("res") FindProductDetailByCategorysRequest res);
 
     @Query(value = """
                 SELECT
@@ -369,7 +435,12 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, St
                    c.name AS nameCategory,
                    b.name AS nameBrand,
                    detail.quantity AS quantity,
-                   AVG(pr.value) AS promotion,
+                   (SELECT MAX(p2.value)
+                       FROM promotion_product_detail ppd2
+                       LEFT JOIN promotion p2 ON ppd2.id_promotion = p2.id
+                       LEFT JOIN product_detail pd on ppd2.id_product_detail = pd.id
+                       WHERE p2.status='DANG_SU_DUNG' AND pd.id = detail.id)
+                   AS promotion,
                    detail.quantity,
                    s2.name AS size,
                    c2.code AS color,

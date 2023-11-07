@@ -1,11 +1,24 @@
 package com.example.shose.server.controller.admin;
 
-import com.example.shose.server.dto.request.bill.*;
+import com.example.shose.server.dto.request.bill.BillRequest;
+import com.example.shose.server.dto.request.bill.ChangAllStatusBillByIdsRequest;
+import com.example.shose.server.dto.request.bill.ChangStatusBillRequest;
+import com.example.shose.server.dto.request.bill.CreateBillOfflineRequest;
+import com.example.shose.server.dto.request.bill.FindNewBillCreateAtCounterRequest;
+import com.example.shose.server.dto.request.bill.UpdateBillRequest;
+import com.example.shose.server.infrastructure.session.ShoseSession;
 import com.example.shose.server.service.BillService;
 import com.example.shose.server.util.ResponseObject;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -16,8 +29,9 @@ public class BillRestController {
     @Autowired
     private BillService billService;
 
-    @Value("${user}")
-    private String userId;
+
+    @Autowired
+    private ShoseSession shoseSession;
 
 
     @GetMapping
@@ -36,23 +50,23 @@ public class BillRestController {
     }
 
     @PostMapping("")
-    public ResponseObject save(@RequestBody  CreateBillOfflineRequest request){
-        return  new ResponseObject(billService.save(userId, request));
+    public ResponseObject save(@RequestBody CreateBillOfflineRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.save(shoseSession.getUserId(),requests, request));
     }
 
     @PutMapping("/change-status/{id}")
-    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.changedStatusbill(id, userId, request));
+    public ResponseObject changStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.changedStatusbill(id, shoseSession.getUserId(), request, requests));
     }
 
     @PutMapping("/cancel-status/{id}")
-    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request){
-        return  new ResponseObject(billService.cancelBill(id, userId, request));
+    public ResponseObject cancelStatusBill(@PathVariable("id") String id, ChangStatusBillRequest request, HttpServletRequest requests){
+        return  new ResponseObject(billService.cancelBill(id, shoseSession.getUserId(), request, requests));
     }
 
     @GetMapping("/details-invoices-counter")
     public ResponseObject findAllBillAtCounterAndStatusNewBill(FindNewBillCreateAtCounterRequest request) {
-        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(request));
+        return  new ResponseObject(billService.findAllBillAtCounterAndStatusNewBill(shoseSession.getUserId(), request));
     }
 
     @GetMapping("/count-paymet-post-paid/{id}")
@@ -66,13 +80,13 @@ public class BillRestController {
     }
 
     @PutMapping("/change-status-bill")
-    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request) {
-        return  new ResponseObject(billService.changeStatusAllBillByIds(request, userId));
+    public ResponseObject changeStatusAllBillByIds(@RequestBody ChangAllStatusBillByIdsRequest request, HttpServletRequest requests) {
+        return  new ResponseObject(billService.changeStatusAllBillByIds(request,requests, shoseSession.getUserId()));
     }
 
     @GetMapping("/code-bill")
     public ResponseObject CreateCodeBill() {
-        return  new ResponseObject(billService.CreateCodeBill(userId));
+        return  new ResponseObject(billService.CreateCodeBill(shoseSession.getUserId()));
     }
 
     @PutMapping("/update-bill-wait")
@@ -80,4 +94,9 @@ public class BillRestController {
         return  new ResponseObject(billService.updateBillWait(request));
     }
 
+
+    @GetMapping("/invoice/{id}")
+    public ResponseObject getInvoice(@PathVariable("id") String id, HttpServletRequest requests)  {
+        return new ResponseObject(billService.createFilePdf(id,requests));
+    }
 }

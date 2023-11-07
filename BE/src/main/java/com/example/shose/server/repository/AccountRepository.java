@@ -5,6 +5,7 @@ import com.example.shose.server.dto.response.account.AccountResponse;
 import com.example.shose.server.entity.Account;
 import com.example.shose.server.dto.response.employee.SimpleEmployeeResponse;
 import com.example.shose.server.entity.User;
+import com.example.shose.server.infrastructure.constant.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 
@@ -37,4 +39,14 @@ public interface AccountRepository extends JpaRepository<Account, String> {
             "LEFT JOIN bill bi ON bi.id_account = ac.id\n" +
             "WHERE bi.id  = :idBill", nativeQuery = true)
     AccountResponse getAccountUserByIdBill(@Param("idBill") String idBill );
+
+    @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
+    Optional<Account> findByEmail(String email);
+
+    @Query("SELECT a FROM Account a WHERE a.roles = :role")
+    Optional<Account> findByRole(@Param("role") String role);
+
+    @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.password =:password")
+    Account getOneByEmailPassword(@Param("email") String email , @Param("password") String password);
+
 }

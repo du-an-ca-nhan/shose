@@ -12,12 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/client/category")
-public class CategoryClientRestController {
+public class
+CategoryClientRestController {
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping()
     public ResponseObject getAll() {
         return new ResponseObject(categoryService.getAll());
+    }
+    @GetMapping("/in-product-detail")
+    public ResponseObject getCategoryInProductDetail() {
+        return new ResponseObject(categoryService.getCategoryInProductDetail());
     }
 }

@@ -147,4 +147,11 @@ export class BillApi {
         url: `/admin/bill/code-bill`,
       });
     };
+
+    static exportPdf = (id) => {
+      return request({
+        method: "GET",
+        url: `/admin/bill/invoice/${id}`,
+      });
+    };
 }

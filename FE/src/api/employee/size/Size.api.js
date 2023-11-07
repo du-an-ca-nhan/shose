@@ -44,4 +44,10 @@ export class SizeApi {
       data: data,
     });
   };
+  static getSizeInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/size/in-product-detail`,
+    });
+  };
 }

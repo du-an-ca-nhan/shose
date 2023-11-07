@@ -2,6 +2,8 @@ package com.example.shose.server.repository;
 
 import com.example.shose.server.dto.request.sole.FindSoleRequest;
 import com.example.shose.server.dto.response.SoleResponse;
+import com.example.shose.server.dto.response.size.GetSizeInProductDetail;
+import com.example.shose.server.dto.response.sole.GetSoleInProductDetail;
 import com.example.shose.server.entity.Sole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -41,5 +43,12 @@ public interface SoleRepository extends JpaRepository<Sole, String> {
 
     @Query("SELECT s FROM Sole s WHERE s.name =:name AND s.id <> :id")
     Sole getByNameExistence(@Param("name") String name, @Param("id") String id);
+
+    @Query(value = """
+            select s.id,s.name from sole s
+            where s.id in (select pd.id_sole from product_detail pd)
+            group by s.id,s.name
+            """, nativeQuery = true)
+    List<GetSoleInProductDetail> getSoleInProductDetail();
 
 }

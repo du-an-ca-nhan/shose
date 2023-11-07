@@ -2,9 +2,11 @@
   font-size: 25px;
   font-weight: 500;
 }
+
 .title_add {
   padding: 15px;
 }
+
 .filter {
   margin-top: 15px;
   background-color: rgb(255, 255, 255);
@@ -13,6 +15,7 @@
   border-radius: 5px;
   padding: 10px;
 }
+
 .add {
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
@@ -23,12 +26,14 @@
   padding-bottom: 20px;
   justify-content: center;
 }
+
 .content-wrapper-ac {
   padding-bottom: 20px;
   display: flex;
   width: 100%;
   justify-content: space-between;
 }
+
 .search-bar {
   display: flex;
   align-items: center;
@@ -55,10 +60,12 @@
   align-items: center;
   gap: 10px;
 }
+
 .date-label,
 .age-label {
   margin-right: 10px;
 }
+
 .box_btn_filter {
   text-align: center;
   padding-bottom: 40px;
@@ -97,10 +104,11 @@
   padding: 10px;
 }
 
-.account-table > div {
+.account-table>div {
   align-items: center;
   margin-bottom: 10px;
 }
+
 .trangthai-sd {
   border: 1px solid green;
   background-color: lightgreen;
@@ -118,20 +126,21 @@
   height: 30px;
   pointer-events: none;
 }
+
 .title_add Input {
   height: 40px;
 }
+
 .input-item {
   height: 40px;
 }
-.ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload.ant-upload-select {
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload.ant-upload-select {
   width: 240px;
   height: 240px;
 }
-.ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload-list.ant-upload-list-picture-circle
-  .ant-upload-list-item {
+
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item {
   width: 240px;
   height: 240px;
   display: flex;
@@ -139,41 +148,23 @@
   margin: 0 auto;
   margin-right: 300px;
 }
-:where(
-    .css-dev-only-do-not-override-1m62vyb
-  ).ant-upload-wrapper.ant-upload-picture-card-wrapper
-  .ant-upload-list.ant-upload-list-picture-card
-  .ant-upload-list-item-container,
-:where(
-    .css-dev-only-do-not-override-1m62vyb
-  ).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload-list.ant-upload-list-picture-card
-  .ant-upload-list-item-container,
-:where(
-    .css-dev-only-do-not-override-1m62vyb
-  ).ant-upload-wrapper.ant-upload-picture-card-wrapper
-  .ant-upload-list.ant-upload-list-picture-circle
-  .ant-upload-list-item-container,
-:where(
-    .css-dev-only-do-not-override-1m62vyb
-  ).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload-list.ant-upload-list-picture-circle
-  .ant-upload-list-item-container
-  .ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload.ant-upload-select {
+
+:where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container,
+:where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container,
+:where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item-container,
+:where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item-container .ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload.ant-upload-select {
   /* width: 230%; */
   /* height: 180px; */
 }
 
-.ant-upload-wrapper.ant-upload-picture-circle-wrapper
-  .ant-upload-list.ant-upload-list-picture-circle
-  .ant-upload-list-item {
+.ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item {
   width: 225%;
   height: 235px;
   /* display: flex;
   justify-content: center;
   margin: 0 auto; */
 }
+
 /* :where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container, :where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-card .ant-upload-list-item-container, :where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item-container, :where(.css-dev-only-do-not-override-1m62vyb).ant-upload-wrapper.ant-upload-picture-circle-wrapper .ant-upload-list.ant-upload-list-picture-circle .ant-upload-list-item-container {
   display: inline-block;
   height: 102px;

@@ -9,6 +9,7 @@ import {
   Col,
   Modal,
   Tooltip,
+  Radio
 } from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import "./style-customer.css";
@@ -48,7 +49,12 @@ const CustomerManagement = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [clickRadio, setClickRadio] = useState('');
 
+
+  const changeRadio = (index) => {
+    setClickRadio(index)
+  }
   // Lấy mảng redux ra
   const data = useAppSelector(GetCustomer);
   useEffect(() => {
@@ -402,6 +408,7 @@ const CustomerManagement = () => {
   const [isModalAddressOpen, setIsModalAddressOpen] = useState(false);
 
   const showModalAddress = (e) => {
+
     setIsModalAddressOpen(true);
   };
   const handleOkAddress = () => {
@@ -422,6 +429,7 @@ const CustomerManagement = () => {
     setCustomerId(record.id);
     AddressApi.fetchAllAddressByUser(record.id).then((res) => {
       setListAddress(res.data.data);
+      console.log(res.data.data);
     });
   };
 
@@ -578,34 +586,63 @@ const CustomerManagement = () => {
         title="Địa chỉ"
         open={isModalAddressOpen}
         onOk={handleOkAddress}
-        className="account"
         onCancel={handleCancelAddress}
+        height={400}
       >
         <Row style={{ width: "100%" }}>
-          <Col span={20}></Col>
-          <Col span={1}></Col>
-          <Col span={3}>
-            {" "}
-            <Button
-              className="btn_filter"
-              type="submit"
-              onClick={() => handleOpenAddAdress()}
-            >
-              Thêm địa chỉ
-            </Button>
+          <Col span={16}></Col>
+          <Col span={1}>
+            <Button onClick={() => handleOpenAddAdress()}>+ Thêm địa chỉ mới</Button>
           </Col>
         </Row>
-        <Row style={{ width: "100%", marginTop: "20px" }}>
-          <Table
-            style={{ width: "100%" }}
-            dataSource={listAddress}
-            rowKey="id"
-            columns={columnsAddress}
-            pagination={{ pageSize: 5 }}
-            className="customer-table"
-            rowClassName={getRowClassName}
-          />
+        <Row style={{ marginTop: "20px" }}>
         </Row>
+        <div style={{ overflowY: 'auto', height: '450px' }}>
+          {listAddress.map((item, index) => (
+            <div style={{ marginTop: "10px", marginBottom: "20px",borderTop:"1px solid grey", padding:"10px 0"}}>
+              <Row style={{ marginTop: "20px" }}>
+                <Col span={2}>
+                  <Radio
+                    name="group-radio"
+                    value={item}
+                    checked={!clickRadio ? item.status === "DANG_SU_DUNG" : index === clickRadio}
+                    onChange={() => changeRadio(index)}
+                  />
+                </Col>
+                <Col span={17}>
+                  <Row>
+                    <span style={{ fontSize: 17, fontWeight: 600, marginRight: 3 }}>
+                      {item.fullName}
+                    </span>
+                    {"  |  "}
+                    <span style={{marginTop:"2px",marginLeft: 3}}>{item.phoneNumber}</span>
+                  </Row>
+                  <Row>
+                    <span style={{ fontSize: 14}}>
+                      {item.address}
+                    </span>
+                  </Row>
+                  {item.status === "DANG_SU_DUNG" ? (
+                    <Row>
+                      <div style={{ marginTop: "10px", marginRight: "30px" }}>
+                        <span className="status-default-address">Mặc định</span>
+                      </div>
+                    </Row>
+                  ) : null}
+                </Col>
+                <Col span={4}>
+                  <Button type="dashed"
+                    title="Chọn"
+                    style={{
+                      border: "1px solid #ff4400",
+                      fontWeight: "470",
+                    }}
+                    onClick={() => handleViewUpdate(item.id)}> Cập nhật</Button>
+                </Col>
+              </Row>
+            </div>
+          ))}
+        </div>
       </Modal>
       {/* end  modal Address */}
     </>

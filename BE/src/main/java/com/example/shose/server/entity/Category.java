@@ -29,4 +29,5 @@ public class Category extends PrimaryEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+
 }

@@ -16,7 +16,7 @@ function HeaderMenu() {
   const [isOptionVisible, setOptionVisible] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeField, setActiveField] = useState("");
-  const idAccountLocal = localStorage.getItem("idAccount");
+  const idAccount = sessionStorage.getItem("idAccount");
   const { totalQuantity } = useCart();
 
   const fields = [
@@ -121,11 +121,18 @@ function HeaderMenu() {
               <Badge
                 size="small"
                 count={totalQuantity}
-                style={{ backgroundColor: "#ff4400", fontSize: "10px" }}
+                style={{ 
+                  backgroundColor: "#ff4400", 
+                  fontSize: "10px", 
+                  height: "15px",  
+                  width: "15px",
+                  display:"flex",
+                  justifyContent:"center"
+                }}
               >
                 <ShoppingCartOutlined
                   className="cart-menu"
-                  style={{ fontSize: "20px" }}
+                  style={{ fontSize: "22px" }}
                 />
               </Badge>
             </Link>

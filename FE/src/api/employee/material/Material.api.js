@@ -23,11 +23,17 @@ export class MaterialApi {
     });
   };
 
-  static update = (id,data) => {
+  static update = (id, data) => {
     return request({
       method: "PUT",
       url: `/admin/material/${id}`,
       data: data,
+    });
+  };
+  static getMaterialInProductDetail = () => {
+    return request({
+      method: "GET",
+      url: `/client/material/in-product-detail`,
     });
   };
 }
