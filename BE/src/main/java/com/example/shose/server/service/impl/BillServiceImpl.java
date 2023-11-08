@@ -618,7 +618,7 @@ public class BillServiceImpl implements BillService {
                 }
                 productDetailRepository.save(productDetail);
             });
-            if(request.getResponsePayment().getVnp_ResponseCode() != "00"){
+            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
@@ -650,7 +650,7 @@ public class BillServiceImpl implements BillService {
         addressRepository.save(address);
 
         Bill bill = Bill.builder()
-                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
+                .code("HD" + RandomStringUtils.randomNumeric(6))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWard() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
@@ -658,8 +658,12 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
+                .email(request.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
+        if(!request.getPaymentMethod().equals("paymentReceive")){
+            bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
@@ -690,12 +694,13 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney())
-                .status(StatusPayMents.THANH_TOAN).build();
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount())
+                .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
         }
         paymentsMethodRepository.save(paymentsMethod);
 
@@ -733,13 +738,13 @@ public class BillServiceImpl implements BillService {
                 }
                 productDetailRepository.save(productDetail);
             });
-            if(request.getResponsePayment().getVnp_ResponseCode() != "00"){
+            if(!request.getResponsePayment().getVnp_TransactionStatus().equals("00")){
                 throw new RestApiException(Message.PAYMENT_ERROR);
             }
         }
         Account account = accountRepository.findById(request.getIdAccount()).get();
         Bill bill = Bill.builder()
-                .code(request.getResponsePayment().getVnp_TxnRef().split("-")[0])
+                .code("HD" + RandomStringUtils.randomNumeric(6) )
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress())
                 .userName(request.getUserName())
@@ -747,8 +752,12 @@ public class BillServiceImpl implements BillService {
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
+                .email(account.getEmail())
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
+          if(!request.getPaymentMethod().equals("paymentReceive")){
+            bill.setCode(request.getResponsePayment().getVnp_TxnRef().split("-")[0]);
+        }
         billRepository.save(bill);
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
@@ -781,12 +790,13 @@ public class BillServiceImpl implements BillService {
         PaymentsMethod paymentsMethod = PaymentsMethod.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? StatusMethod.TIEN_MAT : StatusMethod.CHUYEN_KHOAN)
                 .bill(bill)
-                .totalMoney(request.getTotalMoney())
-                .status(StatusPayMents.THANH_TOAN).build();
+                .totalMoney(request.getTotalMoney().add(request.getMoneyShip()).subtract(request.getItemDiscount())
+                .status(StatusPayMents.TRA_SAU).build();
         if(!request.getPaymentMethod().equals("paymentReceive")){
             paymentsMethod.setVnp_TransactionNo(request.getResponsePayment().getVnp_TransactionNo());
             paymentsMethod.setCreateAt(Long.parseLong(request.getResponsePayment().getVnp_TxnRef().split("-")[1]));
             paymentsMethod.setTransactionDate(Long.parseLong(request.getResponsePayment().getVnp_PayDate()));
+            paymentsMethod.setStatus(StatusPayMents.THANH_TOAN);
         }
         paymentsMethodRepository.save(paymentsMethod);
 
@@ -856,7 +866,7 @@ public class BillServiceImpl implements BillService {
         Optional<Bill> optional = billRepository.findById(idBill);
         InvoiceResponse invoice = exportFilePdfFormHtml.getInvoiceResponse(optional.get());
             invoice.setCheckShip(true);
-        if( (optional.get().getEmail() != null || !optional.get().getEmail().isEmpty())){
+         if( (optional.get().getEmail() != null)){
             sendMail(invoice, "http://localhost:3000/bill/"+ optional.get().getCode()+"/"+optional.get().getPhoneNumber(), optional.get().getEmail());
         }
     }
